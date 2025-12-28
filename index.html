@@ -17,55 +17,173 @@ body{
   background:#020617;
   color:#e5e7eb;
 }
-.app{max-width:900px;margin:0 auto;padding:16px}
+.app{
+  max-width:900px;
+  margin:0 auto;
+  padding:16px;
+}
 .card{
   background:#020617;
   border-radius:16px;
   border:1px solid #1f2937;
   padding:16px;
-  margin-bottom:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
 }
-.hidden{display:none}
-input,button{
-  width:100%;
-  padding:10px 12px;
-  border-radius:999px;
-  border:1px solid #374151;
-  background:#020617;
-  color:#f9fafb;
+h1{font-size:20px;margin:0 0 12px;}
+label{font-size:14px;display:block;margin-top:8px;}
+input{
+  width:100%;padding:10px 12px;border-radius:999px;
+  border:1px solid #374151;background:#020617;color:#f9fafb;outline:none;
 }
 button{
+  margin-top:12px;
+  padding:10px 16px;
+  border-radius:999px;
   border:none;
-  margin-top:10px;
-  background:#22c55e;
-  color:#022c22;
   cursor:pointer;
 }
-.btn-secondary{
-  background:#111827;
-  color:#e5e7eb;
-  border:1px solid #374151;
+.btn-primary{background:#22c55e;color:#022c22;}
+.btn-secondary{background:#111827;color:#e5e7eb;border:1px solid #374151;}
+.meta{font-size:12px;color:#9ca3af;margin-top:4px;}
+.hidden{display:none;}
+
+.list{margin-top:16px;}
+.item{
+  border-top:1px solid #1f2937;
+  padding:12px 0;
 }
-.meta{font-size:13px;color:#9ca3af;margin-top:6px}
-label{font-size:14px;display:block;margin-top:10px}
-h2{margin:0 0 8px}
+.item-title{font-size:15px;font-weight:600;}
+.badge{
+  display:inline-block;font-size:11px;padding:2px 8px;
+  border-radius:999px;margin-right:4px;
+}
+.badge-not{background:#111827;color:#f97316;}
+.badge-sub{background:#052e16;color:#4ade80;}
+.badge-over{background:#450a0a;color:#fca5a5;}
+
+/* タブ */
 .view-tabs{
   display:inline-flex;
-  gap:6px;
-  margin:10px 0;
-}
-.tab{
-  padding:6px 12px;
   border-radius:999px;
+  padding:2px;
+  background:#020617;
+  border:1px solid #1f2937;
+  margin:8px 0 4px;
+}
+.tab-btn{
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:12px;
+  border:none;
+  cursor:pointer;
+  background:transparent;
+  color:#9ca3af;
+}
+.tab-btn-active{
+  background:#22c55e;
+  color:#022c22;
+}
+
+/* カレンダー */
+.calendar-wrapper{
+  margin-top:8px;
+  border-radius:16px;
+  border:1px solid #1f2937;
+  padding:12px;
+}
+.cal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+.cal-header-title{font-weight:600;}
+.cal-nav-btn{
+  background:#111827;
+  color:#e5e7eb;
+  border-radius:999px;
+  padding:4px 10px;
   font-size:12px;
   border:1px solid #374151;
   cursor:pointer;
-  background:#020617;
+}
+.cal-weekdays,.cal-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:2px;
+  font-size:11px;
+}
+.cal-weekdays div{
+  text-align:center;
+  padding:4px 0;
   color:#9ca3af;
 }
-.tab.active{
-  background:#22c55e;
-  color:#022c22;
+.cal-cell{
+  min-height:70px;
+  padding:4px;
+  border-radius:8px;
+  border:1px solid transparent;
+  text-align:left;
+  font-size:11px;
+  position:relative;
+  cursor:pointer;
+}
+.cal-cell-empty{
+  cursor:default;
+  color:#6b7280;
+  background:#020617;
+}
+.cal-cell-day{
+  font-size:12px;
+  font-weight:600;
+  margin-bottom:2px;
+}
+.cal-cell-hover:hover{
+  border-color:#374151;
+  background:#020617;
+}
+.cal-overdue{background:rgba(248,113,113,0.07);}
+.cal-submitted{background:rgba(74,222,128,0.05);}
+.cal-has{background:rgba(245,158,11,0.04);}
+.cal-selected{
+  border-color:#22c55e;
+  box-shadow:0 0 0 1px rgba(34,197,94,0.4);
+}
+
+/* カレンダー内宿題 */
+.cal-hw-list{margin-top:2px;}
+.cal-hw{
+  border-radius:8px;
+  border:1px solid #1f2937;
+  background:#020617;
+  padding:2px 4px;
+  margin-top:2px;
+}
+.cal-hw-title{
+  font-size:11px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.cal-hw-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:2px;
+}
+.cal-hw-status{
+  font-size:10px;
+  padding:1px 6px;
+  border-radius:999px;
+}
+.cal-hw-status-pending{background:#111827;color:#f97316;}
+.cal-hw-status-submitted{background:#052e16;color:#4ade80;}
+.cal-hw-status-overdue{background:#450a0a;color:#fca5a5;}
+.cal-hw-open{
+  margin-top:0;
+  padding:2px 8px;
+  font-size:10px;
+  border-radius:999px;
 }
 </style>
 </head>
@@ -75,46 +193,43 @@ h2{margin:0 0 8px}
 
 <!-- ログイン -->
 <div class="card" id="loginCard">
-  <h2>スタマネ</h2>
-
+  <h1>スタマネ</h1>
   <label>生徒ID</label>
   <input id="sid">
-
   <label>パスワード</label>
   <input id="pwd" type="password">
-
-  <label style="display:flex;align-items:center;gap:6px;margin-top:10px">
-    <input type="checkbox" id="rememberLogin" style="width:auto">
-    <span>ログイン情報を保存する</span>
-  </label>
-
-  <button onclick="login()">ログイン</button>
+  <button class="btn-primary" onclick="login()">ログイン</button>
   <div id="loginError" class="meta" style="color:#fca5a5"></div>
 </div>
 
 <!-- ポータル -->
 <div class="card hidden" id="portalCard">
-  <div id="studentInfo" class="meta"></div>
+  <div class="meta" id="studentInfo"></div>
 
-  <!-- タブ -->
+  <button class="btn-secondary" onclick="refreshAssignments()">🔄 更新</button>
+
   <div class="view-tabs">
-    <div class="tab" id="tabTodo" onclick="showTodo()">📝 宿題</div>
-    <div class="tab" id="tabCalendar" onclick="showCalendar()">📅 カレンダー</div>
-  </div>
-
-  <!-- 宿題 -->
-  <div id="todoArea"></div>
-
-  <!-- 全部完了 -->
-  <div id="allDoneMessage" class="meta hidden">
-    🎉 すべての宿題が完了しています！<br>
-    次の予定はカレンダーで確認できます。
+    <button id="tabCalendar" class="tab-btn">カレンダー</button>
+    <button id="tabList" class="tab-btn">宿題一覧</button>
   </div>
 
   <!-- カレンダー -->
-  <div id="calendarWrapper" class="hidden">
-    <div class="meta">※ ここに既存カレンダーUIが表示されます</div>
+  <div id="calendarWrapper" class="calendar-wrapper hidden">
+    <div class="cal-header">
+      <button class="cal-nav-btn" onclick="changeMonth(-1)">＜ 前の月</button>
+      <div class="cal-header-title" id="calMonthTitle"></div>
+      <button class="cal-nav-btn" onclick="changeMonth(1)">次の月 ＞</button>
+    </div>
+    <div class="cal-weekdays">
+      <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
   </div>
+
+  <div class="meta" id="selectedDateInfo"></div>
+
+  <!-- 宿題一覧 -->
+  <div class="list" id="assignmentList"></div>
 
   <button class="btn-secondary" onclick="logout()">ログアウト</button>
 </div>
@@ -122,30 +237,28 @@ h2{margin:0 0 8px}
 </div>
 
 <script>
-/* =========================
+/* =====================
    設定
-========================= */
-const API_BASE =
-  'https://script.google.com/macros/s/AKfycbw9wrLj_SgmFusn_8YwMJ_I9b9_36JpMdbGK4fPJpXOXVD-BI844jqXgZBGkbdFjFD2/exec';
+===================== */
+const API_BASE = 'https://script.google.com/macros/s/AKfycbw9wrLj_SgmFusn_8YwMJ_I9b9_36JpMdbGK4fPJpXOXVD-BI844jqXgZBGkbdFjFD2/exec';
 
-const SESSION_KEY = 'stamane_session';
-const LOGIN_KEY   = 'stamane_login';
-
+let currentStudent = null;
 let allAssignments = [];
+let currentYear, currentMonth;
+let selectedDateStr = null;
+let viewMode = 'calendar';
 
-/* =========================
+/* =====================
    ログイン
-========================= */
+===================== */
 function login(){
   const sid = sidEl().value.trim();
   const pwd = pwdEl().value.trim();
   loginError().textContent = '';
-
   if(!sid || !pwd){
     loginError().textContent = 'IDとパスワードを入力してください';
     return;
   }
-
   fetch(`${API_BASE}?api=login&studentId=${encodeURIComponent(sid)}&password=${encodeURIComponent(pwd)}`)
     .then(r=>r.json())
     .then(d=>{
@@ -158,150 +271,210 @@ function login(){
 }
 
 function onLoginSuccess(student){
-  localStorage.setItem(SESSION_KEY, JSON.stringify(student));
-
-  if(rememberEl().checked){
-    localStorage.setItem(LOGIN_KEY, JSON.stringify({
-      sid: sidEl().value,
-      pwd: pwdEl().value
-    }));
-  }
-
-  showPortal(student);
-  loadAssignments(student.studentId);
+  currentStudent = student;
+  loginCard().classList.add('hidden');
+  portalCard().classList.remove('hidden');
+  studentInfo().textContent = `${student.name} さん（${student.studentId}）`;
+  initCalendarState();
+  loadAssignments();
 }
 
-/* =========================
-   宿題取得
-========================= */
-function loadAssignments(studentId){
-  fetch(`${API_BASE}?api=assignments&studentId=${encodeURIComponent(studentId)}`)
+/* =====================
+   宿題
+===================== */
+function getUnsubmitted(){
+  return (allAssignments||[]).filter(a=>{
+    const s = String(a.status||'').trim();
+    return s==='' || s==='未提出';
+  });
+}
+
+function loadAssignments(){
+  fetch(`${API_BASE}?api=assignments&studentId=${encodeURIComponent(currentStudent.studentId)}`)
     .then(r=>r.json())
     .then(d=>{
       allAssignments = d.assignments || [];
+      renderCalendar();
       decideInitialView();
     });
 }
 
-/* =========================
-   初期表示判断
-========================= */
 function decideInitialView(){
-  const todos = allAssignments.filter(a=>{
-    const s = String(a.status||'');
-    return s === '' || s === '未提出';
-  });
-
-  if(todos.length > 0){
-    showTodo();
+  const todos = getUnsubmitted();
+  if(todos.length>0){
+    showList();
   }else{
     showCalendar();
   }
 }
 
-/* =========================
+/* =====================
    表示切替
-========================= */
-function showTodo(){
-  setTab('todo');
-  calendarWrapper().classList.add('hidden');
-  todoArea().innerHTML = '';
-  allDoneMsg().classList.add('hidden');
+===================== */
+function showCalendar(){
+  viewMode='calendar';
+  setTabActive('calendar');
+  calendarWrapper().classList.remove('hidden');
+  selectedDateInfo().classList.remove('hidden');
+  renderAssignmentListForDate(null);
+}
 
-  const todos = allAssignments.filter(a=>{
-    const s = String(a.status||'');
-    return s === '' || s === '未提出';
+function showList(){
+  viewMode='list';
+  setTabActive('list');
+  calendarWrapper().classList.add('hidden');
+  selectedDateInfo().classList.add('hidden');
+  renderAssignmentListForDate(null);
+}
+
+function setTabActive(mode){
+  tabCalendar().classList.toggle('tab-btn-active', mode==='calendar');
+  tabList().classList.toggle('tab-btn-active', mode==='list');
+}
+
+tabCalendar().onclick = showCalendar;
+tabList().onclick = showList;
+
+/* =====================
+   カレンダー
+===================== */
+function initCalendarState(){
+  const t=new Date();
+  currentYear=t.getFullYear();
+  currentMonth=t.getMonth();
+  selectedDateStr=null;
+}
+
+function changeMonth(d){
+  currentMonth+=d;
+  if(currentMonth<0){currentMonth=11;currentYear--;}
+  if(currentMonth>11){currentMonth=0;currentYear++;}
+  selectedDateStr=null;
+  renderCalendar();
+  if(viewMode==='calendar') renderAssignmentListForDate(null);
+}
+
+function formatDateStr(dt){
+  return dt.toISOString().slice(0,10);
+}
+
+function renderCalendar(){
+  const grid=calGrid();
+  grid.innerHTML='';
+  calMonthTitle().textContent=`${currentYear}年 ${currentMonth+1}月`;
+
+  const map={};
+  allAssignments.forEach(a=>{
+    if(!a.due) return;
+    (map[a.due]=map[a.due]||[]).push(a);
   });
 
-  if(todos.length === 0){
-    allDoneMsg().classList.remove('hidden');
+  const first=new Date(currentYear,currentMonth,1);
+  for(let i=0;i<first.getDay();i++){
+    const c=document.createElement('div');
+    c.className='cal-cell cal-cell-empty';
+    grid.appendChild(c);
+  }
+
+  const days=new Date(currentYear,currentMonth+1,0).getDate();
+  for(let d=1;d<=days;d++){
+    const cell=document.createElement('div');
+    cell.className='cal-cell cal-cell-hover';
+    const date=new Date(currentYear,currentMonth,d);
+    const ds=formatDateStr(date);
+
+    const day=document.createElement('div');
+    day.className='cal-cell-day';
+    day.textContent=d;
+    cell.appendChild(day);
+
+    const items=map[ds]||[];
+    let hasTodo=false,hasOver=false,hasDone=false;
+    items.forEach(a=>{
+      if(a.overdue && (!a.status||a.status==='未提出')) hasOver=true;
+      if(!a.status||a.status==='未提出') hasTodo=true;
+      if(a.status==='提出'||a.status==='提出済') hasDone=true;
+    });
+    if(items.length){
+      if(hasOver) cell.classList.add('cal-overdue');
+      else if(hasTodo) cell.classList.add('cal-has');
+      else if(hasDone) cell.classList.add('cal-submitted');
+    }
+
+    cell.onclick=()=>{
+      selectedDateStr=ds;
+      showCalendar();
+      renderAssignmentListForDate(ds);
+    };
+    grid.appendChild(cell);
+  }
+}
+
+function renderAssignmentListForDate(ds){
+  const list=assignmentList();
+  list.innerHTML='';
+  let items=getUnsubmitted();
+
+  if(viewMode==='calendar'){
+    if(ds) items=items.filter(a=>a.due===ds);
+    selectedDateInfo().textContent=ds?`${ds} の宿題`:'カレンダーの日付を選択してください';
+  }else{
+    selectedDateInfo().textContent='';
+  }
+
+  if(!items.length){
+    list.innerHTML = viewMode==='list'
+      ? '<div class="meta">🎉 すべての宿題が完了しています！</div>'
+      : '';
     return;
   }
 
-  todos.forEach(a=>{
-    const div = document.createElement('div');
-    div.className = 'meta';
-    div.textContent = `・${a.title || '宿題'}`;
-    todoArea().appendChild(div);
+  items.forEach(a=>{
+    const d=document.createElement('div');
+    d.className='item';
+    d.innerHTML=`<div class="item-title">${a.title||''}</div>`;
+    const b=document.createElement('button');
+    b.className='btn-primary';
+    b.textContent='宿題を開く';
+    b.onclick=()=>window.open(a.openUrl,'_blank');
+    d.appendChild(b);
+    list.appendChild(d);
   });
 }
 
-function showCalendar(){
-  setTab('calendar');
-  todoArea().innerHTML = '';
-  allDoneMsg().classList.add('hidden');
-  calendarWrapper().classList.remove('hidden');
-
-  renderCalendar(); // ← あなたの既存カレンダー関数
+/* =====================
+   その他
+===================== */
+function refreshAssignments(){
+  loadAssignments();
 }
-
-function setTab(mode){
-  tabTodo().classList.toggle('active', mode==='todo');
-  tabCalendar().classList.toggle('active', mode==='calendar');
-}
-
-/* =========================
-   復元
-========================= */
-function restoreSession(){
-  const raw = localStorage.getItem(SESSION_KEY);
-  if(!raw) return;
-  const student = JSON.parse(raw);
-  showPortal(student);
-  loadAssignments(student.studentId);
-}
-
-function restoreLoginInput(){
-  const raw = localStorage.getItem(LOGIN_KEY);
-  if(!raw) return;
-  const d = JSON.parse(raw);
-  sidEl().value = d.sid || '';
-  pwdEl().value = d.pwd || '';
-  rememberEl().checked = true;
-}
-
-/* =========================
-   表示
-========================= */
-function showPortal(student){
-  loginCard().classList.add('hidden');
-  portalCard().classList.remove('hidden');
-  studentInfo().textContent =
-    `${student.name} さん（${student.studentId}）`;
-}
-
 function logout(){
-  localStorage.removeItem(SESSION_KEY);
+  currentStudent=null;
   portalCard().classList.add('hidden');
   loginCard().classList.remove('hidden');
 }
 
-/* =========================
+/* =====================
    DOM
-========================= */
-const sidEl = ()=>document.getElementById('sid');
-const pwdEl = ()=>document.getElementById('pwd');
-const rememberEl = ()=>document.getElementById('rememberLogin');
-const loginCard = ()=>document.getElementById('loginCard');
-const portalCard = ()=>document.getElementById('portalCard');
-const studentInfo = ()=>document.getElementById('studentInfo');
-const loginError = ()=>document.getElementById('loginError');
-const todoArea = ()=>document.getElementById('todoArea');
-const allDoneMsg = ()=>document.getElementById('allDoneMessage');
-const calendarWrapper = ()=>document.getElementById('calendarWrapper');
-const tabTodo = ()=>document.getElementById('tabTodo');
-const tabCalendar = ()=>document.getElementById('tabCalendar');
+===================== */
+const sidEl=()=>document.getElementById('sid');
+const pwdEl=()=>document.getElementById('pwd');
+const loginError=()=>document.getElementById('loginError');
+const loginCard=()=>document.getElementById('loginCard');
+const portalCard=()=>document.getElementById('portalCard');
+const studentInfo=()=>document.getElementById('studentInfo');
+const calendarWrapper=()=>document.getElementById('calendarWrapper');
+const selectedDateInfo=()=>document.getElementById('selectedDateInfo');
+const assignmentList=()=>document.getElementById('assignmentList');
+const calGrid=()=>document.getElementById('calGrid');
+const calMonthTitle=()=>document.getElementById('calMonthTitle');
+const tabCalendar=()=>document.getElementById('tabCalendar');
+const tabList=()=>document.getElementById('tabList');
 
-/* =========================
-   起動
-========================= */
-restoreLoginInput();
-restoreSession();
-
-/* =========================
+/* =====================
    PWA
-========================= */
-if ('serviceWorker' in navigator) {
+===================== */
+if('serviceWorker'in navigator){
   navigator.serviceWorker.register('service-worker.js');
 }
 </script>
