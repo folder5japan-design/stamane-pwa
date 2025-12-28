@@ -5,31 +5,42 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>スタマネ</title>
 
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#020617">
+
 <style>
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:#020617;
   color:#e5e7eb;
 }
-
 .app{
   max-width:900px;
   margin:0 auto;
   padding:16px;
 }
-
 .card{
   background:#020617;
   border-radius:16px;
   border:1px solid #1f2937;
   padding:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
 }
+.hidden{display:none}
+h1{font-size:20px;margin:0 0 12px}
+button{
+  padding:8px 14px;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+}
+.btn-primary{background:#22c55e;color:#022c22}
+.btn-secondary{background:#111827;color:#e5e7eb;border:1px solid #374151}
+.meta{font-size:12px;color:#9ca3af}
 
 /* ===== カレンダー ===== */
-
 .calendar-wrapper{
   margin-top:8px;
   border-radius:16px;
@@ -37,82 +48,163 @@ body{
   padding:12px;
   overflow:hidden;
 }
-
 .cal-header{
   display:flex;
   justify-content:space-between;
   margin-bottom:8px;
 }
-
-.cal-weekdays,
-.cal-row{
+.cal-weekdays,.cal-row{
   display:flex;
   width:100%;
 }
-
-.cal-weekday,
-.cal-cell{
-  width:calc(100% / 7);   /* ★ これが決定打 */
-  text-align:center;
+.cal-weekday,.cal-cell{
+  width:calc(100% / 7);
   font-size:11px;
 }
-
 .cal-weekday{
+  text-align:center;
   padding:4px 0;
   color:#9ca3af;
 }
-
 .cal-cell{
   min-height:70px;
   padding:4px;
-  border-radius:8px;
   margin:1px;
-  background:#020617;
+  border-radius:8px;
 }
-
 .cal-cell-day{
   font-size:12px;
   font-weight:600;
 }
-
-.cal-has{ background:rgba(245,158,11,0.04); }
-.cal-overdue{ background:rgba(248,113,113,0.07); }
-
+.cal-has{background:rgba(245,158,11,0.08)}
+.cal-overdue{background:rgba(248,113,113,0.08)}
+.cal-submitted{background:rgba(74,222,128,0.05)}
 </style>
 </head>
 
 <body>
 <div class="app">
-  <div class="card">
-    <h1>スタマネ</h1>
 
-    <div class="calendar-wrapper">
-      <div class="cal-header">
-        <div>2025年 1月</div>
-      </div>
-
-      <div class="cal-weekdays">
-        <div class="cal-weekday">日</div>
-        <div class="cal-weekday">月</div>
-        <div class="cal-weekday">火</div>
-        <div class="cal-weekday">水</div>
-        <div class="cal-weekday">木</div>
-        <div class="cal-weekday">金</div>
-        <div class="cal-weekday">土</div>
-      </div>
-
-      <div class="cal-row">
-        <div class="cal-cell cal-has"><div class="cal-cell-day">1</div></div>
-        <div class="cal-cell"><div class="cal-cell-day">2</div></div>
-        <div class="cal-cell"><div class="cal-cell-day">3</div></div>
-        <div class="cal-cell"><div class="cal-cell-day">4</div></div>
-        <div class="cal-cell"><div class="cal-cell-day">5</div></div>
-        <div class="cal-cell"><div class="cal-cell-day">6</div></div>
-        <div class="cal-cell"><div class="cal-cell-day">7</div></div>
-      </div>
-
-    </div>
-  </div>
+<!-- ===== ログイン ===== -->
+<div class="card" id="loginCard">
+  <h1>スタマネ</h1>
+  <input id="sid" placeholder="生徒ID"><br><br>
+  <input id="pwd" type="password" placeholder="パスワード"><br><br>
+  <button class="btn-primary" onclick="login()">ログイン</button>
+  <div id="loginError" class="meta"></div>
 </div>
+
+<!-- ===== ポータル ===== -->
+<div class="card hidden" id="portalCard">
+  <div class="meta" id="studentInfo"></div>
+
+  <div class="calendar-wrapper">
+    <div class="cal-header">
+      <button class="btn-secondary" onclick="changeMonth(-1)">＜</button>
+      <div id="calTitle"></div>
+      <button class="btn-secondary" onclick="changeMonth(1)">＞</button>
+    </div>
+
+    <div class="cal-weekdays">
+      <div class="cal-weekday">日</div><div class="cal-weekday">月</div>
+      <div class="cal-weekday">火</div><div class="cal-weekday">水</div>
+      <div class="cal-weekday">木</div><div class="cal-weekday">金</div>
+      <div class="cal-weekday">土</div>
+    </div>
+
+    <div id="calBody"></div>
+  </div>
+
+  <div id="taskList"></div>
+</div>
+
+</div>
+
+<script>
+/* ===== 設定 ===== */
+const API = 'https://script.google.com/macros/s/【あなたのexecURL】/exec';
+
+let currentYear, currentMonth;
+let assignments = [];
+
+/* ===== ログイン ===== */
+function login(){
+  const sid = sidEl().value.trim();
+  const pwd = pwdEl().value.trim();
+  fetch(`${API}?api=login&studentId=${sid}&password=${pwd}`)
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d.ok){ errEl().textContent='ログイン失敗'; return; }
+      loginCard().classList.add('hidden');
+      portalCard().classList.remove('hidden');
+      studentInfo().textContent = d.student.name + ' さん';
+      initCalendar();
+      loadAssignments(d.student.studentId);
+    });
+}
+
+/* ===== 宿題取得 ===== */
+function loadAssignments(sid){
+  fetch(`${API}?api=assignments&studentId=${sid}`)
+    .then(r=>r.json())
+    .then(d=>{
+      assignments = d.assignments || [];
+      renderCalendar();
+    });
+}
+
+/* ===== カレンダー ===== */
+function initCalendar(){
+  const t = new Date();
+  currentYear = t.getFullYear();
+  currentMonth = t.getMonth();
+}
+function changeMonth(d){
+  currentMonth += d;
+  if(currentMonth<0){currentMonth=11;currentYear--}
+  if(currentMonth>11){currentMonth=0;currentYear++}
+  renderCalendar();
+}
+function renderCalendar(){
+  calTitle().textContent = `${currentYear}年 ${currentMonth+1}月`;
+  calBody().innerHTML='';
+  const first = new Date(currentYear,currentMonth,1);
+  const start = first.getDay();
+  const days = new Date(currentYear,currentMonth+1,0).getDate();
+
+  let row = document.createElement('div');
+  row.className='cal-row';
+
+  for(let i=0;i<start;i++) row.appendChild(emptyCell());
+
+  for(let d=1;d<=days;d++){
+    const cell = document.createElement('div');
+    cell.className='cal-cell';
+    cell.innerHTML=`<div class="cal-cell-day">${d}</div>`;
+    row.appendChild(cell);
+    if((start+d)%7===0){
+      calBody().appendChild(row);
+      row=document.createElement('div');
+      row.className='cal-row';
+    }
+  }
+  if(row.children.length) calBody().appendChild(row);
+}
+function emptyCell(){
+  const c=document.createElement('div');
+  c.className='cal-cell';
+  return c;
+}
+
+/* ===== DOM ===== */
+const sidEl=()=>document.getElementById('sid');
+const pwdEl=()=>document.getElementById('pwd');
+const errEl=()=>document.getElementById('loginError');
+const loginCard=()=>document.getElementById('loginCard');
+const portalCard=()=>document.getElementById('portalCard');
+const studentInfo=()=>document.getElementById('studentInfo');
+const calBody=()=>document.getElementById('calBody');
+const calTitle=()=>document.getElementById('calTitle');
+</script>
 </body>
 </html>
