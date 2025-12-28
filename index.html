@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>スタマネ</title>
 
-<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#020617">
 
 <style>
@@ -30,8 +29,17 @@ body{
 }
 .hidden{display:none}
 h1{font-size:20px;margin:0 0 12px}
+input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid #374151;
+  background:#020617;
+  color:#f9fafb;
+}
 button{
-  padding:8px 14px;
+  margin-top:10px;
+  padding:10px 16px;
   border-radius:999px;
   border:none;
   cursor:pointer;
@@ -51,6 +59,7 @@ button{
 .cal-header{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   margin-bottom:8px;
 }
 .cal-weekdays,.cal-row{
@@ -88,8 +97,8 @@ button{
 <!-- ===== ログイン ===== -->
 <div class="card" id="loginCard">
   <h1>スタマネ</h1>
-  <input id="sid" placeholder="生徒ID"><br><br>
-  <input id="pwd" type="password" placeholder="パスワード"><br><br>
+  <input id="sid" placeholder="生徒ID">
+  <input id="pwd" type="password" placeholder="パスワード">
   <button class="btn-primary" onclick="login()">ログイン</button>
   <div id="loginError" class="meta"></div>
 </div>
@@ -106,46 +115,53 @@ button{
     </div>
 
     <div class="cal-weekdays">
-      <div class="cal-weekday">日</div><div class="cal-weekday">月</div>
-      <div class="cal-weekday">火</div><div class="cal-weekday">水</div>
-      <div class="cal-weekday">木</div><div class="cal-weekday">金</div>
+      <div class="cal-weekday">日</div>
+      <div class="cal-weekday">月</div>
+      <div class="cal-weekday">火</div>
+      <div class="cal-weekday">水</div>
+      <div class="cal-weekday">木</div>
+      <div class="cal-weekday">金</div>
       <div class="cal-weekday">土</div>
     </div>
 
     <div id="calBody"></div>
   </div>
-
-  <div id="taskList"></div>
 </div>
 
 </div>
 
 <script>
-/* ===== 設定 ===== */
-const API = 'https://script.google.com/macros/s/【あなたのexecURL】/exec';
+/* ===== GAS exec URL（確定） ===== */
+const API =
+'https://script.google.com/macros/s/AKfycbw9wrLj_SgmFusn_8YwMJ_I9b9_36JpMdbGK4fPJpXOXVD-BI844jqXgZBGkbdFjFD2/exec';
 
 let currentYear, currentMonth;
 let assignments = [];
 
 /* ===== ログイン ===== */
 function login(){
-  const sid = sidEl().value.trim();
-  const pwd = pwdEl().value.trim();
-  fetch(`${API}?api=login&studentId=${sid}&password=${pwd}`)
+  const sid = document.getElementById('sid').value.trim();
+  const pwd = document.getElementById('pwd').value.trim();
+  const err = document.getElementById('loginError');
+  err.textContent='';
+
+  fetch(`${API}?api=login&studentId=${encodeURIComponent(sid)}&password=${encodeURIComponent(pwd)}`)
     .then(r=>r.json())
     .then(d=>{
-      if(!d.ok){ errEl().textContent='ログイン失敗'; return; }
-      loginCard().classList.add('hidden');
-      portalCard().classList.remove('hidden');
-      studentInfo().textContent = d.student.name + ' さん';
+      if(!d.ok){ err.textContent='ログイン失敗'; return; }
+      document.getElementById('loginCard').classList.add('hidden');
+      document.getElementById('portalCard').classList.remove('hidden');
+      document.getElementById('studentInfo').textContent =
+        `${d.student.name} さん（ID:${d.student.studentId}）`;
       initCalendar();
       loadAssignments(d.student.studentId);
-    });
+    })
+    .catch(()=>err.textContent='通信エラー');
 }
 
 /* ===== 宿題取得 ===== */
 function loadAssignments(sid){
-  fetch(`${API}?api=assignments&studentId=${sid}`)
+  fetch(`${API}?api=assignments&studentId=${encodeURIComponent(sid)}`)
     .then(r=>r.json())
     .then(d=>{
       assignments = d.assignments || [];
@@ -155,56 +171,80 @@ function loadAssignments(sid){
 
 /* ===== カレンダー ===== */
 function initCalendar(){
-  const t = new Date();
-  currentYear = t.getFullYear();
-  currentMonth = t.getMonth();
+  const t=new Date();
+  currentYear=t.getFullYear();
+  currentMonth=t.getMonth();
 }
 function changeMonth(d){
-  currentMonth += d;
+  currentMonth+=d;
   if(currentMonth<0){currentMonth=11;currentYear--}
   if(currentMonth>11){currentMonth=0;currentYear++}
   renderCalendar();
 }
 function renderCalendar(){
-  calTitle().textContent = `${currentYear}年 ${currentMonth+1}月`;
-  calBody().innerHTML='';
-  const first = new Date(currentYear,currentMonth,1);
-  const start = first.getDay();
-  const days = new Date(currentYear,currentMonth+1,0).getDate();
+  document.getElementById('calTitle').textContent =
+    `${currentYear}年 ${currentMonth+1}月`;
 
-  let row = document.createElement('div');
+  const body=document.getElementById('calBody');
+  body.innerHTML='';
+
+  const first=new Date(currentYear,currentMonth,1);
+  const start=first.getDay();
+  const days=new Date(currentYear,currentMonth+1,0).getDate();
+
+  const map={};
+  assignments.forEach(a=>{
+    if(!a.due)return;
+    if(!map[a.due])map[a.due]=[];
+    map[a.due].push(a);
+  });
+
+  let row=document.createElement('div');
   row.className='cal-row';
 
   for(let i=0;i<start;i++) row.appendChild(emptyCell());
 
   for(let d=1;d<=days;d++){
-    const cell = document.createElement('div');
+    const date=new Date(currentYear,currentMonth,d);
+    const ds=format(date);
+
+    const cell=document.createElement('div');
     cell.className='cal-cell';
     cell.innerHTML=`<div class="cal-cell-day">${d}</div>`;
+
+    const items=map[ds]||[];
+    items.forEach(a=>{
+      const hw=document.createElement('div');
+      hw.style.fontSize='10px';
+      hw.textContent=a.title||'宿題';
+      if(a.overdue && (!a.status||a.status==='未提出')){
+        cell.classList.add('cal-overdue');
+      }else if(!a.status||a.status==='未提出'){
+        cell.classList.add('cal-has');
+      }else{
+        cell.classList.add('cal-submitted');
+      }
+      cell.appendChild(hw);
+    });
+
     row.appendChild(cell);
+
     if((start+d)%7===0){
-      calBody().appendChild(row);
+      body.appendChild(row);
       row=document.createElement('div');
       row.className='cal-row';
     }
   }
-  if(row.children.length) calBody().appendChild(row);
+  if(row.children.length) body.appendChild(row);
 }
 function emptyCell(){
   const c=document.createElement('div');
   c.className='cal-cell';
   return c;
 }
-
-/* ===== DOM ===== */
-const sidEl=()=>document.getElementById('sid');
-const pwdEl=()=>document.getElementById('pwd');
-const errEl=()=>document.getElementById('loginError');
-const loginCard=()=>document.getElementById('loginCard');
-const portalCard=()=>document.getElementById('portalCard');
-const studentInfo=()=>document.getElementById('studentInfo');
-const calBody=()=>document.getElementById('calBody');
-const calTitle=()=>document.getElementById('calTitle');
+function format(d){
+  return `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}-${('0'+d.getDate()).slice(-2)}`;
+}
 </script>
 </body>
 </html>
