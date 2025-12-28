@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>スタマネ</title>
 
 <link rel="manifest" href="manifest.json">
@@ -10,6 +10,10 @@
 
 <style>
 *{box-sizing:border-box}
+
+/* =====================
+   基本
+===================== */
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
@@ -31,8 +35,12 @@ body{
 h1{font-size:20px;margin:0 0 12px;}
 label{font-size:14px;display:block;margin-top:8px;}
 input{
-  width:100%;padding:10px 12px;border-radius:999px;
-  border:1px solid #374151;background:#020617;color:#f9fafb;
+  width:100%;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid #374151;
+  background:#020617;
+  color:#f9fafb;
 }
 button{
   margin-top:12px;
@@ -71,15 +79,16 @@ button{
 }
 
 /* =====================
-   カレンダー（★修正版）
+   カレンダー（★最終修正版）
 ===================== */
 .calendar-wrapper{
   margin-top:8px;
   border-radius:16px;
   border:1px solid #1f2937;
   padding:12px;
-  overflow:hidden; /* ★ 左はみ出し防止 */
+  overflow:hidden;
 }
+
 .cal-header{
   display:flex;
   justify-content:space-between;
@@ -96,12 +105,12 @@ button{
   border:1px solid #374151;
 }
 
-/* ★ gapを使わない */
+/* ★ grid幅を完全固定 */
 .cal-weekdays,
 .cal-grid{
   display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:0;
+  grid-template-columns:repeat(7, minmax(0, 1fr));
+  width:100%;
   font-size:11px;
 }
 
@@ -111,38 +120,44 @@ button{
   color:#9ca3af;
 }
 
-/* ★ marginで余白を作る */
+/* ★ border廃止 → box-shadow */
 .cal-cell{
   min-height:70px;
   padding:4px;
-  margin:1px;                 /* ← これが効く */
   border-radius:8px;
-  border:1px solid transparent;
   font-size:11px;
   cursor:pointer;
+  box-shadow:inset 0 0 0 1px transparent;
 }
+
+.cal-cell-hover:hover{
+  box-shadow:inset 0 0 0 1px #374151;
+}
+
 .cal-cell-empty{
   cursor:default;
   color:#6b7280;
 }
+
 .cal-cell-day{
   font-size:12px;
   font-weight:600;
   margin-bottom:2px;
 }
-.cal-cell-hover:hover{
-  border-color:#374151;
-}
+
+/* 状態色 */
 .cal-overdue{background:rgba(248,113,113,0.07);}
 .cal-submitted{background:rgba(74,222,128,0.05);}
 .cal-has{background:rgba(245,158,11,0.04);}
+
 .cal-selected{
-  border-color:#22c55e;
-  box-shadow:0 0 0 1px rgba(34,197,94,0.4);
+  box-shadow:
+    inset 0 0 0 2px #22c55e,
+    0 0 0 1px rgba(34,197,94,0.4);
 }
 
 /* =====================
-   スマホ調整
+   スマホ
 ===================== */
 @media (max-width:768px){
   body{font-size:16px}
@@ -155,24 +170,41 @@ button{
 <div class="app">
 
 <div class="card">
-  <h1>スタマネ</h1>
+  <h1>スタマネ（表示確認用）</h1>
+
   <div class="calendar-wrapper">
     <div class="cal-header">
       <button class="cal-nav-btn">＜ 前</button>
       <div class="cal-header-title">2025年 1月</div>
       <button class="cal-nav-btn">次 ＞</button>
     </div>
+
     <div class="cal-weekdays">
-      <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
+      <div>日</div><div>月</div><div>火</div><div>水</div>
+      <div>木</div><div>金</div><div>土</div>
     </div>
+
     <div class="cal-grid">
-      <!-- 日付セル -->
-      <div class="cal-cell cal-cell-empty"></div>
       <div class="cal-cell cal-cell-hover">
         <div class="cal-cell-day">1</div>
       </div>
       <div class="cal-cell cal-cell-hover">
         <div class="cal-cell-day">2</div>
+      </div>
+      <div class="cal-cell cal-cell-hover">
+        <div class="cal-cell-day">3</div>
+      </div>
+      <div class="cal-cell cal-cell-hover">
+        <div class="cal-cell-day">4</div>
+      </div>
+      <div class="cal-cell cal-cell-hover">
+        <div class="cal-cell-day">5</div>
+      </div>
+      <div class="cal-cell cal-cell-hover">
+        <div class="cal-cell-day">6</div>
+      </div>
+      <div class="cal-cell cal-cell-hover">
+        <div class="cal-cell-day">7</div>
       </div>
     </div>
   </div>
