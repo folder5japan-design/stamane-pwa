@@ -2,85 +2,34 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>スタマネ</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#020617">
 
 <style>
 *{box-sizing:border-box}
 
-/* =====================
-   基本
-===================== */
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:#020617;
   color:#e5e7eb;
 }
+
 .app{
   max-width:900px;
   margin:0 auto;
   padding:16px;
 }
+
 .card{
   background:#020617;
   border-radius:16px;
   border:1px solid #1f2937;
   padding:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
-}
-h1{font-size:20px;margin:0 0 12px;}
-label{font-size:14px;display:block;margin-top:8px;}
-input{
-  width:100%;
-  padding:10px 12px;
-  border-radius:999px;
-  border:1px solid #374151;
-  background:#020617;
-  color:#f9fafb;
-}
-button{
-  margin-top:12px;
-  padding:10px 16px;
-  border-radius:999px;
-  border:none;
-  cursor:pointer;
-}
-.btn-primary{background:#22c55e;color:#022c22;}
-.btn-secondary{background:#111827;color:#e5e7eb;border:1px solid #374151;}
-.meta{font-size:12px;color:#9ca3af;margin-top:4px;}
-.hidden{display:none}
-
-/* =====================
-   タブ
-===================== */
-.view-tabs{
-  display:inline-flex;
-  border-radius:999px;
-  padding:2px;
-  background:#020617;
-  border:1px solid #1f2937;
-  margin:8px 0 4px;
-}
-.tab-btn{
-  border-radius:999px;
-  padding:6px 12px;
-  font-size:12px;
-  border:none;
-  background:transparent;
-  color:#9ca3af;
-}
-.tab-btn-active{
-  background:#22c55e;
-  color:#022c22;
 }
 
-/* =====================
-   カレンダー（★最終修正版）
-===================== */
+/* ===== カレンダー ===== */
+
 .calendar-wrapper{
   margin-top:8px;
   border-radius:16px;
@@ -92,124 +41,78 @@ button{
 .cal-header{
   display:flex;
   justify-content:space-between;
-  align-items:center;
   margin-bottom:8px;
 }
-.cal-header-title{font-weight:600;}
-.cal-nav-btn{
-  background:#111827;
-  color:#e5e7eb;
-  border-radius:999px;
-  padding:4px 10px;
-  font-size:12px;
-  border:1px solid #374151;
+
+.cal-weekdays,
+.cal-row{
+  display:flex;
+  width:100%;
 }
 
-/* ★ grid幅を完全固定 */
-.cal-weekdays,
-.cal-grid{
-  display:grid;
-  grid-template-columns:repeat(7, minmax(0, 1fr));
-  width:100%;
+.cal-weekday,
+.cal-cell{
+  width:calc(100% / 7);   /* ★ これが決定打 */
+  text-align:center;
   font-size:11px;
 }
 
-.cal-weekdays div{
-  text-align:center;
+.cal-weekday{
   padding:4px 0;
   color:#9ca3af;
 }
 
-/* ★ border廃止 → box-shadow */
 .cal-cell{
   min-height:70px;
   padding:4px;
   border-radius:8px;
-  font-size:11px;
-  cursor:pointer;
-  box-shadow:inset 0 0 0 1px transparent;
-}
-
-.cal-cell-hover:hover{
-  box-shadow:inset 0 0 0 1px #374151;
-}
-
-.cal-cell-empty{
-  cursor:default;
-  color:#6b7280;
+  margin:1px;
+  background:#020617;
 }
 
 .cal-cell-day{
   font-size:12px;
   font-weight:600;
-  margin-bottom:2px;
 }
 
-/* 状態色 */
-.cal-overdue{background:rgba(248,113,113,0.07);}
-.cal-submitted{background:rgba(74,222,128,0.05);}
-.cal-has{background:rgba(245,158,11,0.04);}
+.cal-has{ background:rgba(245,158,11,0.04); }
+.cal-overdue{ background:rgba(248,113,113,0.07); }
 
-.cal-selected{
-  box-shadow:
-    inset 0 0 0 2px #22c55e,
-    0 0 0 1px rgba(34,197,94,0.4);
-}
-
-/* =====================
-   スマホ
-===================== */
-@media (max-width:768px){
-  body{font-size:16px}
-  button{width:100%}
-}
 </style>
 </head>
 
 <body>
 <div class="app">
+  <div class="card">
+    <h1>スタマネ</h1>
 
-<div class="card">
-  <h1>スタマネ（表示確認用）</h1>
+    <div class="calendar-wrapper">
+      <div class="cal-header">
+        <div>2025年 1月</div>
+      </div>
 
-  <div class="calendar-wrapper">
-    <div class="cal-header">
-      <button class="cal-nav-btn">＜ 前</button>
-      <div class="cal-header-title">2025年 1月</div>
-      <button class="cal-nav-btn">次 ＞</button>
-    </div>
+      <div class="cal-weekdays">
+        <div class="cal-weekday">日</div>
+        <div class="cal-weekday">月</div>
+        <div class="cal-weekday">火</div>
+        <div class="cal-weekday">水</div>
+        <div class="cal-weekday">木</div>
+        <div class="cal-weekday">金</div>
+        <div class="cal-weekday">土</div>
+      </div>
 
-    <div class="cal-weekdays">
-      <div>日</div><div>月</div><div>火</div><div>水</div>
-      <div>木</div><div>金</div><div>土</div>
-    </div>
+      <div class="cal-row">
+        <div class="cal-cell cal-has"><div class="cal-cell-day">1</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">2</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">3</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">4</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">5</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">6</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">7</div></div>
+      </div>
 
-    <div class="cal-grid">
-      <div class="cal-cell cal-cell-hover">
-        <div class="cal-cell-day">1</div>
-      </div>
-      <div class="cal-cell cal-cell-hover">
-        <div class="cal-cell-day">2</div>
-      </div>
-      <div class="cal-cell cal-cell-hover">
-        <div class="cal-cell-day">3</div>
-      </div>
-      <div class="cal-cell cal-cell-hover">
-        <div class="cal-cell-day">4</div>
-      </div>
-      <div class="cal-cell cal-cell-hover">
-        <div class="cal-cell-day">5</div>
-      </div>
-      <div class="cal-cell cal-cell-hover">
-        <div class="cal-cell-day">6</div>
-      </div>
-      <div class="cal-cell cal-cell-hover">
-        <div class="cal-cell-day">7</div>
-      </div>
     </div>
   </div>
-</div>
-
 </div>
 </body>
 </html>
