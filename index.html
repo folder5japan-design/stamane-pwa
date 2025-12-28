@@ -28,8 +28,12 @@ body{
 h1{font-size:20px;margin:0 0 12px;}
 label{font-size:14px;display:block;margin-top:8px;}
 input{
-  width:100%;padding:10px 12px;border-radius:999px;
-  border:1px solid #374151;background:#020617;color:#f9fafb;
+  width:100%;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid #374151;
+  background:#020617;
+  color:#f9fafb;
 }
 button{
   margin-top:12px;
@@ -43,7 +47,7 @@ button{
 .meta{font-size:12px;color:#9ca3af;margin-top:4px;}
 .hidden{display:none}
 
-/* ===== タブ ===== */
+/* タブ */
 .view-tabs{
   display:inline-flex;
   border-radius:999px;
@@ -65,30 +69,25 @@ button{
   color:#022c22;
 }
 
-/* ===== カレンダー（★FIX済） ===== */
+/* カレンダー（元のまま） */
 .calendar-wrapper{
   margin-top:8px;
   border-radius:16px;
   border:1px solid #1f2937;
   padding:12px;
-  overflow:hidden;
 }
 .cal-header{
   display:flex;
   justify-content:space-between;
   margin-bottom:8px;
 }
-.cal-weekdays,
-.cal-row{
-  display:flex;
-  width:100%;
-}
-.cal-weekday,
-.cal-cell{
-  width:calc(100% / 7); /* ★FIX */
+.cal-weekdays,.cal-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:2px;
   font-size:11px;
 }
-.cal-weekday{
+.cal-weekdays div{
   text-align:center;
   padding:4px 0;
   color:#9ca3af;
@@ -96,8 +95,8 @@ button{
 .cal-cell{
   min-height:70px;
   padding:4px;
-  margin:1px;
   border-radius:8px;
+  font-size:11px;
 }
 .cal-cell-day{
   font-size:12px;
@@ -119,6 +118,12 @@ button{
   <input id="sid">
   <label>パスワード</label>
   <input id="pwd" type="password">
+
+  <label style="display:flex;gap:6px;align-items:center;margin-top:6px;">
+    <input type="checkbox" id="rememberLogin">
+    ログイン情報を保存する
+  </label>
+
   <button class="btn-primary" onclick="login()">ログイン</button>
   <div id="loginError" class="meta"></div>
 </div>
@@ -142,13 +147,11 @@ button{
     </div>
 
     <div class="cal-weekdays">
-      <div class="cal-weekday">日</div><div class="cal-weekday">月</div>
-      <div class="cal-weekday">火</div><div class="cal-weekday">水</div>
-      <div class="cal-weekday">木</div><div class="cal-weekday">金</div>
-      <div class="cal-weekday">土</div>
+      <div>日</div><div>月</div><div>火</div><div>水</div>
+      <div>木</div><div>金</div><div>土</div>
     </div>
 
-    <div id="calBody"></div>
+    <div class="cal-grid" id="calGrid"></div>
   </div>
 
   <div id="assignmentList"></div>
@@ -163,20 +166,44 @@ function baseExecUrl(){
   return 'https://script.google.com/macros/s/AKfycbw9wrLj_SgmFusn_8YwMJ_I9b9_36JpMdbGK4fPJpXOXVD-BI844jqXgZBGkbdFjFD2/exec';
 }
 
+/* ===== ログイン保存 ===== */
+function saveSession(student){
+  localStorage.setItem('stamane_session', JSON.stringify(student));
+}
+function loadSession(){
+  const s = localStorage.getItem('stamane_session');
+  return s ? JSON.parse(s) : null;
+}
+function clearSession(){
+  localStorage.removeItem('stamane_session');
+}
+
 let currentStudent=null;
 let allAssignments=[];
 let currentYear,currentMonth;
-let viewMode='calendar';
+
+/* ===== 復元 ===== */
+(function(){
+  const s=loadSession();
+  if(!s)return;
+  currentStudent=s;
+  loginCard.classList.add('hidden');
+  portalCard.classList.remove('hidden');
+  studentInfo.textContent=`${s.name} さん`;
+  initCalendar();
+  loadAssignments();
+})();
 
 /* ===== ログイン ===== */
 function login(){
-  const sid=document.getElementById('sid').value.trim();
-  const pwd=document.getElementById('pwd').value.trim();
+  const sid=sidEl().value.trim();
+  const pwd=pwdEl().value.trim();
   fetch(baseExecUrl()+`?api=login&studentId=${sid}&password=${pwd}`)
     .then(r=>r.json())
     .then(d=>{
       if(!d.ok){loginError.textContent='ログイン失敗';return;}
       currentStudent=d.student;
+      if(rememberLogin.checked) saveSession(d.student);
       loginCard.classList.add('hidden');
       portalCard.classList.remove('hidden');
       studentInfo.textContent=`${d.student.name} さん`;
@@ -185,13 +212,24 @@ function login(){
     });
 }
 
+function logout(){
+  clearSession();
+  location.reload();
+}
+
+/* ===== 宿題 ===== */
 function loadAssignments(){
   fetch(baseExecUrl()+`?api=assignments&studentId=${currentStudent.studentId}`)
     .then(r=>r.json())
     .then(d=>{
       allAssignments=d.assignments||[];
       renderCalendar();
+      renderList();
     });
+}
+
+function refreshAssignments(){
+  loadAssignments();
 }
 
 /* ===== カレンダー ===== */
@@ -208,56 +246,34 @@ function changeMonth(d){
 }
 function renderCalendar(){
   calMonthTitle.textContent=`${currentYear}年 ${currentMonth+1}月`;
-  calBody.innerHTML='';
+  calGrid.innerHTML='';
   const first=new Date(currentYear,currentMonth,1);
   const start=first.getDay();
   const days=new Date(currentYear,currentMonth+1,0).getDate();
 
-  const map={};
-  allAssignments.forEach(a=>{
-    if(a.due){
-      if(!map[a.due])map[a.due]=[];
-      map[a.due].push(a);
-    }
-  });
-
-  let row=document.createElement('div');
-  row.className='cal-row';
-
-  for(let i=0;i<start;i++) row.appendChild(emptyCell());
+  for(let i=0;i<start;i++) calGrid.appendChild(document.createElement('div'));
 
   for(let d=1;d<=days;d++){
-    const date=new Date(currentYear,currentMonth,d);
-    const ds=format(date);
-
     const cell=document.createElement('div');
     cell.className='cal-cell';
     cell.innerHTML=`<div class="cal-cell-day">${d}</div>`;
-
-    (map[ds]||[]).forEach(a=>{
-      if(a.overdue) cell.classList.add('cal-overdue');
-      else if(!a.status) cell.classList.add('cal-has');
-      else cell.classList.add('cal-submitted');
-    });
-
-    row.appendChild(cell);
-
-    if((start+d)%7===0){
-      calBody.appendChild(row);
-      row=document.createElement('div');
-      row.className='cal-row';
-    }
+    calGrid.appendChild(cell);
   }
-  if(row.children.length) calBody.appendChild(row);
 }
-function emptyCell(){
-  const c=document.createElement('div');
-  c.className='cal-cell';
-  return c;
+
+/* ===== 一覧 ===== */
+function renderList(){
+  assignmentList.innerHTML='';
+  allAssignments.forEach(a=>{
+    const div=document.createElement('div');
+    div.textContent=a.title||'宿題';
+    assignmentList.appendChild(div);
+  });
 }
-function format(d){
-  return `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}-${('0'+d.getDate()).slice(-2)}`;
-}
+
+/* ===== DOM ===== */
+const sidEl=()=>sid;
+const pwdEl=()=>pwd;
 </script>
 </body>
 </html>
