@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>スタマネ</title>
 
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#020617">
+
 <style>
 *{box-sizing:border-box}
 body{
@@ -13,21 +17,15 @@ body{
   background:#020617;
   color:#e5e7eb;
 }
-.app{
-  max-width:900px;
-  margin:0 auto;
-  padding:16px;
-}
+.app{max-width:900px;margin:0 auto;padding:16px}
 .card{
   background:#020617;
   border-radius:16px;
   border:1px solid #1f2937;
   padding:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
 }
-h1{font-size:20px;margin:0 0 12px;}
-label{font-size:14px;display:block;margin-top:8px;}
-input{
+.hidden{display:none}
+input,button{
   width:100%;
   padding:10px 12px;
   border-radius:999px;
@@ -36,75 +34,14 @@ input{
   color:#f9fafb;
 }
 button{
-  margin-top:12px;
-  padding:10px 16px;
-  border-radius:999px;
   border:none;
-  cursor:pointer;
-}
-.btn-primary{background:#22c55e;color:#022c22;}
-.btn-secondary{background:#111827;color:#e5e7eb;border:1px solid #374151;}
-.meta{font-size:12px;color:#9ca3af;margin-top:4px;}
-.hidden{display:none}
-
-/* タブ */
-.view-tabs{
-  display:inline-flex;
-  border-radius:999px;
-  padding:2px;
-  background:#020617;
-  border:1px solid #1f2937;
-  margin:8px 0 4px;
-}
-.tab-btn{
-  border-radius:999px;
-  padding:6px 12px;
-  font-size:12px;
-  border:none;
-  background:transparent;
-  color:#9ca3af;
-}
-.tab-btn-active{
+  margin-top:10px;
   background:#22c55e;
   color:#022c22;
+  cursor:pointer;
 }
-
-/* カレンダー（元のまま） */
-.calendar-wrapper{
-  margin-top:8px;
-  border-radius:16px;
-  border:1px solid #1f2937;
-  padding:12px;
-}
-.cal-header{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:8px;
-}
-.cal-weekdays,.cal-grid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:2px;
-  font-size:11px;
-}
-.cal-weekdays div{
-  text-align:center;
-  padding:4px 0;
-  color:#9ca3af;
-}
-.cal-cell{
-  min-height:70px;
-  padding:4px;
-  border-radius:8px;
-  font-size:11px;
-}
-.cal-cell-day{
-  font-size:12px;
-  font-weight:600;
-}
-.cal-overdue{background:rgba(248,113,113,0.07)}
-.cal-has{background:rgba(245,158,11,0.04)}
-.cal-submitted{background:rgba(74,222,128,0.05)}
+.meta{font-size:12px;color:#9ca3af;margin-top:6px}
+label{font-size:14px;display:block;margin-top:10px}
 </style>
 </head>
 
@@ -113,167 +50,143 @@ button{
 
 <!-- ログイン -->
 <div class="card" id="loginCard">
-  <h1>スタマネ</h1>
+  <h2>スタマネ</h2>
+
   <label>生徒ID</label>
   <input id="sid">
+
   <label>パスワード</label>
   <input id="pwd" type="password">
 
-  <label style="display:flex;gap:6px;align-items:center;margin-top:6px;">
-    <input type="checkbox" id="rememberLogin">
-    ログイン情報を保存する
+  <label style="display:flex;align-items:center;gap:6px;margin-top:10px">
+    <input type="checkbox" id="rememberLogin" style="width:auto">
+    <span>ログイン情報を保存する</span>
   </label>
 
-  <button class="btn-primary" onclick="login()">ログイン</button>
-  <div id="loginError" class="meta"></div>
+  <button onclick="login()">ログイン</button>
+  <div id="loginError" class="meta" style="color:#fca5a5"></div>
 </div>
 
 <!-- ポータル -->
 <div class="card hidden" id="portalCard">
-  <div class="meta" id="studentInfo"></div>
-
-  <button class="btn-secondary" onclick="refreshAssignments()">🔄 更新</button>
-
-  <div class="view-tabs">
-    <button id="tabCalendar" class="tab-btn tab-btn-active">カレンダー表示</button>
-    <button id="tabList" class="tab-btn">一覧表示</button>
-  </div>
-
-  <div class="calendar-wrapper" id="calendarWrapper">
-    <div class="cal-header">
-      <button class="btn-secondary" onclick="changeMonth(-1)">＜</button>
-      <div id="calMonthTitle"></div>
-      <button class="btn-secondary" onclick="changeMonth(1)">＞</button>
-    </div>
-
-    <div class="cal-weekdays">
-      <div>日</div><div>月</div><div>火</div><div>水</div>
-      <div>木</div><div>金</div><div>土</div>
-    </div>
-
-    <div class="cal-grid" id="calGrid"></div>
-  </div>
-
-  <div id="assignmentList"></div>
-  <button class="btn-secondary" onclick="logout()">ログアウト</button>
+  <div id="studentInfo" class="meta"></div>
+  <button onclick="logout()">ログアウト</button>
 </div>
 
 </div>
 
 <script>
-/* ===== GAS ===== */
-function baseExecUrl(){
-  return 'https://script.google.com/macros/s/AKfycbw9wrLj_SgmFusn_8YwMJ_I9b9_36JpMdbGK4fPJpXOXVD-BI844jqXgZBGkbdFjFD2/exec';
-}
+/* =========================
+   設定
+========================= */
+const API_BASE =
+  'https://script.google.com/macros/s/AKfycbw9wrLj_SgmFusn_8YwMJ_I9b9_36JpMdbGK4fPJpXOXVD-BI844jqXgZBGkbdFjFD2/exec';
 
-/* ===== ログイン保存 ===== */
-function saveSession(student){
-  localStorage.setItem('stamane_session', JSON.stringify(student));
-}
-function loadSession(){
-  const s = localStorage.getItem('stamane_session');
-  return s ? JSON.parse(s) : null;
-}
-function clearSession(){
-  localStorage.removeItem('stamane_session');
-}
+const SESSION_KEY = 'stamane_session';
+const LOGIN_KEY   = 'stamane_login';
 
-let currentStudent=null;
-let allAssignments=[];
-let currentYear,currentMonth;
-
-/* ===== 復元 ===== */
-(function(){
-  const s=loadSession();
-  if(!s)return;
-  currentStudent=s;
-  loginCard.classList.add('hidden');
-  portalCard.classList.remove('hidden');
-  studentInfo.textContent=`${s.name} さん`;
-  initCalendar();
-  loadAssignments();
-})();
-
-/* ===== ログイン ===== */
+/* =========================
+   ログイン
+========================= */
 function login(){
-  const sid=sidEl().value.trim();
-  const pwd=pwdEl().value.trim();
-  fetch(baseExecUrl()+`?api=login&studentId=${sid}&password=${pwd}`)
+  const sid = sidEl().value.trim();
+  const pwd = pwdEl().value.trim();
+  loginError().textContent = '';
+
+  if(!sid || !pwd){
+    loginError().textContent = 'IDとパスワードを入力してください';
+    return;
+  }
+
+  fetch(`${API_BASE}?api=login&studentId=${encodeURIComponent(sid)}&password=${encodeURIComponent(pwd)}`)
     .then(r=>r.json())
     .then(d=>{
-      if(!d.ok){loginError.textContent='ログイン失敗';return;}
-      currentStudent=d.student;
-      if(rememberLogin.checked) saveSession(d.student);
-      loginCard.classList.add('hidden');
-      portalCard.classList.remove('hidden');
-      studentInfo.textContent=`${d.student.name} さん`;
-      initCalendar();
-      loadAssignments();
+      if(!d.ok){
+        loginError().textContent = d.error || 'ログイン失敗';
+        return;
+      }
+      onLoginSuccess(d.student);
+    })
+    .catch(()=>{
+      loginError().textContent = '通信エラー';
     });
+}
+
+function onLoginSuccess(student){
+  localStorage.setItem(SESSION_KEY, JSON.stringify(student));
+
+  if(rememberEl().checked){
+    localStorage.setItem(LOGIN_KEY, JSON.stringify({
+      sid: sidEl().value,
+      pwd: pwdEl().value
+    }));
+  }
+
+  showPortal(student);
+}
+
+/* =========================
+   復元
+========================= */
+function restoreSession(){
+  const raw = localStorage.getItem(SESSION_KEY);
+  if(!raw) return;
+
+  try{
+    showPortal(JSON.parse(raw));
+  }catch(e){}
+}
+
+function restoreLoginInput(){
+  const raw = localStorage.getItem(LOGIN_KEY);
+  if(!raw) return;
+  try{
+    const d = JSON.parse(raw);
+    sidEl().value = d.sid || '';
+    pwdEl().value = d.pwd || '';
+    rememberEl().checked = true;
+  }catch(e){}
+}
+
+/* =========================
+   表示
+========================= */
+function showPortal(student){
+  loginCard().classList.add('hidden');
+  portalCard().classList.remove('hidden');
+  studentInfo().textContent =
+    `${student.name} さん（${student.studentId}）`;
 }
 
 function logout(){
-  clearSession();
-  location.reload();
+  localStorage.removeItem(SESSION_KEY);
+  portalCard().classList.add('hidden');
+  loginCard().classList.remove('hidden');
 }
 
-/* ===== 宿題 ===== */
-function loadAssignments(){
-  fetch(baseExecUrl()+`?api=assignments&studentId=${currentStudent.studentId}`)
-    .then(r=>r.json())
-    .then(d=>{
-      allAssignments=d.assignments||[];
-      renderCalendar();
-      renderList();
-    });
-}
+/* =========================
+   DOM取得
+========================= */
+const sidEl = ()=>document.getElementById('sid');
+const pwdEl = ()=>document.getElementById('pwd');
+const rememberEl = ()=>document.getElementById('rememberLogin');
+const loginCard = ()=>document.getElementById('loginCard');
+const portalCard = ()=>document.getElementById('portalCard');
+const studentInfo = ()=>document.getElementById('studentInfo');
+const loginError = ()=>document.getElementById('loginError');
 
-function refreshAssignments(){
-  loadAssignments();
-}
+/* =========================
+   起動処理
+========================= */
+restoreLoginInput();
+restoreSession();
 
-/* ===== カレンダー ===== */
-function initCalendar(){
-  const t=new Date();
-  currentYear=t.getFullYear();
-  currentMonth=t.getMonth();
+/* =========================
+   PWA Service Worker
+========================= */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
 }
-function changeMonth(d){
-  currentMonth+=d;
-  if(currentMonth<0){currentMonth=11;currentYear--}
-  if(currentMonth>11){currentMonth=0;currentYear++}
-  renderCalendar();
-}
-function renderCalendar(){
-  calMonthTitle.textContent=`${currentYear}年 ${currentMonth+1}月`;
-  calGrid.innerHTML='';
-  const first=new Date(currentYear,currentMonth,1);
-  const start=first.getDay();
-  const days=new Date(currentYear,currentMonth+1,0).getDate();
-
-  for(let i=0;i<start;i++) calGrid.appendChild(document.createElement('div'));
-
-  for(let d=1;d<=days;d++){
-    const cell=document.createElement('div');
-    cell.className='cal-cell';
-    cell.innerHTML=`<div class="cal-cell-day">${d}</div>`;
-    calGrid.appendChild(cell);
-  }
-}
-
-/* ===== 一覧 ===== */
-function renderList(){
-  assignmentList.innerHTML='';
-  allAssignments.forEach(a=>{
-    const div=document.createElement('div');
-    div.textContent=a.title||'宿題';
-    assignmentList.appendChild(div);
-  });
-}
-
-/* ===== DOM ===== */
-const sidEl=()=>sid;
-const pwdEl=()=>pwd;
 </script>
 </body>
 </html>
