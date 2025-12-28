@@ -23,6 +23,7 @@ body{
   border-radius:16px;
   border:1px solid #1f2937;
   padding:16px;
+  margin-bottom:12px;
 }
 .hidden{display:none}
 input,button{
@@ -40,8 +41,14 @@ button{
   color:#022c22;
   cursor:pointer;
 }
-.meta{font-size:12px;color:#9ca3af;margin-top:6px}
+.btn-secondary{
+  background:#111827;
+  color:#e5e7eb;
+  border:1px solid #374151;
+}
+.meta{font-size:13px;color:#9ca3af;margin-top:6px}
 label{font-size:14px;display:block;margin-top:10px}
+h2{margin:0 0 8px}
 </style>
 </head>
 
@@ -70,7 +77,29 @@ label{font-size:14px;display:block;margin-top:10px}
 <!-- ポータル -->
 <div class="card hidden" id="portalCard">
   <div id="studentInfo" class="meta"></div>
-  <button onclick="logout()">ログアウト</button>
+
+  <!-- 未提出宿題 -->
+  <div id="todoArea"></div>
+
+  <!-- 全部完了メッセージ -->
+  <div id="allDoneMessage" class="meta hidden">
+    🎉 すべての宿題が完了しています！<br>
+    次の予定はカレンダーで確認できます。
+    <br><br>
+    <button class="btn-secondary" onclick="showCalendar()">
+      📅 カレンダーを見る
+    </button>
+  </div>
+
+  <!-- カレンダー（プレースホルダ） -->
+  <div id="calendarArea" class="hidden">
+    <div class="meta">📅 カレンダー表示（既存機能をここに統合可能）</div>
+    <button class="btn-secondary" onclick="showTodo()">
+      ← 宿題一覧に戻る
+    </button>
+  </div>
+
+  <button class="btn-secondary" onclick="logout()">ログアウト</button>
 </div>
 
 </div>
@@ -123,6 +152,56 @@ function onLoginSuccess(student){
   }
 
   showPortal(student);
+  loadAssignments(student.studentId);
+}
+
+/* =========================
+   宿題取得・表示
+========================= */
+function loadAssignments(studentId){
+  fetch(`${API_BASE}?api=assignments&studentId=${encodeURIComponent(studentId)}`)
+    .then(r=>r.json())
+    .then(d=>{
+      const list = (d.assignments || []).filter(a=>{
+        const s = String(a.status||'');
+        return s === '' || s === '未提出';
+      });
+
+      renderTodo(list);
+    });
+}
+
+function renderTodo(items){
+  todoArea().innerHTML = '';
+  calendarArea().classList.add('hidden');
+
+  if(items.length === 0){
+    allDoneMsg().classList.remove('hidden');
+    return;
+  }
+
+  allDoneMsg().classList.add('hidden');
+
+  items.forEach(a=>{
+    const div = document.createElement('div');
+    div.className = 'meta';
+    div.textContent = `・${a.title || '宿題'}`;
+    todoArea().appendChild(div);
+  });
+}
+
+/* =========================
+   表示切替
+========================= */
+function showCalendar(){
+  todoArea().innerHTML = '';
+  allDoneMsg().classList.add('hidden');
+  calendarArea().classList.remove('hidden');
+}
+
+function showTodo(){
+  calendarArea().classList.add('hidden');
+  loadAssignments(JSON.parse(localStorage.getItem(SESSION_KEY)).studentId);
 }
 
 /* =========================
@@ -131,9 +210,10 @@ function onLoginSuccess(student){
 function restoreSession(){
   const raw = localStorage.getItem(SESSION_KEY);
   if(!raw) return;
-
   try{
-    showPortal(JSON.parse(raw));
+    const student = JSON.parse(raw);
+    showPortal(student);
+    loadAssignments(student.studentId);
   }catch(e){}
 }
 
@@ -165,7 +245,7 @@ function logout(){
 }
 
 /* =========================
-   DOM取得
+   DOM
 ========================= */
 const sidEl = ()=>document.getElementById('sid');
 const pwdEl = ()=>document.getElementById('pwd');
@@ -174,15 +254,18 @@ const loginCard = ()=>document.getElementById('loginCard');
 const portalCard = ()=>document.getElementById('portalCard');
 const studentInfo = ()=>document.getElementById('studentInfo');
 const loginError = ()=>document.getElementById('loginError');
+const todoArea = ()=>document.getElementById('todoArea');
+const allDoneMsg = ()=>document.getElementById('allDoneMessage');
+const calendarArea = ()=>document.getElementById('calendarArea');
 
 /* =========================
-   起動処理
+   起動
 ========================= */
 restoreLoginInput();
 restoreSession();
 
 /* =========================
-   PWA Service Worker
+   PWA
 ========================= */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
