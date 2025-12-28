@@ -49,6 +49,24 @@ button{
 .meta{font-size:13px;color:#9ca3af;margin-top:6px}
 label{font-size:14px;display:block;margin-top:10px}
 h2{margin:0 0 8px}
+.view-tabs{
+  display:inline-flex;
+  gap:6px;
+  margin:10px 0;
+}
+.tab{
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  border:1px solid #374151;
+  cursor:pointer;
+  background:#020617;
+  color:#9ca3af;
+}
+.tab.active{
+  background:#22c55e;
+  color:#022c22;
+}
 </style>
 </head>
 
@@ -78,25 +96,24 @@ h2{margin:0 0 8px}
 <div class="card hidden" id="portalCard">
   <div id="studentInfo" class="meta"></div>
 
-  <!-- 未提出宿題 -->
+  <!-- タブ -->
+  <div class="view-tabs">
+    <div class="tab" id="tabTodo" onclick="showTodo()">📝 宿題</div>
+    <div class="tab" id="tabCalendar" onclick="showCalendar()">📅 カレンダー</div>
+  </div>
+
+  <!-- 宿題 -->
   <div id="todoArea"></div>
 
-  <!-- 全部完了メッセージ -->
+  <!-- 全部完了 -->
   <div id="allDoneMessage" class="meta hidden">
     🎉 すべての宿題が完了しています！<br>
     次の予定はカレンダーで確認できます。
-    <br><br>
-    <button class="btn-secondary" onclick="showCalendar()">
-      📅 カレンダーを見る
-    </button>
   </div>
 
-  <!-- カレンダー（プレースホルダ） -->
-  <div id="calendarArea" class="hidden">
-    <div class="meta">📅 カレンダー表示（既存機能をここに統合可能）</div>
-    <button class="btn-secondary" onclick="showTodo()">
-      ← 宿題一覧に戻る
-    </button>
+  <!-- カレンダー -->
+  <div id="calendarWrapper" class="hidden">
+    <div class="meta">※ ここに既存カレンダーUIが表示されます</div>
   </div>
 
   <button class="btn-secondary" onclick="logout()">ログアウト</button>
@@ -113,6 +130,8 @@ const API_BASE =
 
 const SESSION_KEY = 'stamane_session';
 const LOGIN_KEY   = 'stamane_login';
+
+let allAssignments = [];
 
 /* =========================
    ログイン
@@ -135,9 +154,6 @@ function login(){
         return;
       }
       onLoginSuccess(d.student);
-    })
-    .catch(()=>{
-      loginError().textContent = '通信エラー';
     });
 }
 
@@ -156,33 +172,53 @@ function onLoginSuccess(student){
 }
 
 /* =========================
-   宿題取得・表示
+   宿題取得
 ========================= */
 function loadAssignments(studentId){
   fetch(`${API_BASE}?api=assignments&studentId=${encodeURIComponent(studentId)}`)
     .then(r=>r.json())
     .then(d=>{
-      const list = (d.assignments || []).filter(a=>{
-        const s = String(a.status||'');
-        return s === '' || s === '未提出';
-      });
-
-      renderTodo(list);
+      allAssignments = d.assignments || [];
+      decideInitialView();
     });
 }
 
-function renderTodo(items){
-  todoArea().innerHTML = '';
-  calendarArea().classList.add('hidden');
+/* =========================
+   初期表示判断
+========================= */
+function decideInitialView(){
+  const todos = allAssignments.filter(a=>{
+    const s = String(a.status||'');
+    return s === '' || s === '未提出';
+  });
 
-  if(items.length === 0){
+  if(todos.length > 0){
+    showTodo();
+  }else{
+    showCalendar();
+  }
+}
+
+/* =========================
+   表示切替
+========================= */
+function showTodo(){
+  setTab('todo');
+  calendarWrapper().classList.add('hidden');
+  todoArea().innerHTML = '';
+  allDoneMsg().classList.add('hidden');
+
+  const todos = allAssignments.filter(a=>{
+    const s = String(a.status||'');
+    return s === '' || s === '未提出';
+  });
+
+  if(todos.length === 0){
     allDoneMsg().classList.remove('hidden');
     return;
   }
 
-  allDoneMsg().classList.add('hidden');
-
-  items.forEach(a=>{
+  todos.forEach(a=>{
     const div = document.createElement('div');
     div.className = 'meta';
     div.textContent = `・${a.title || '宿題'}`;
@@ -190,18 +226,18 @@ function renderTodo(items){
   });
 }
 
-/* =========================
-   表示切替
-========================= */
 function showCalendar(){
+  setTab('calendar');
   todoArea().innerHTML = '';
   allDoneMsg().classList.add('hidden');
-  calendarArea().classList.remove('hidden');
+  calendarWrapper().classList.remove('hidden');
+
+  renderCalendar(); // ← あなたの既存カレンダー関数
 }
 
-function showTodo(){
-  calendarArea().classList.add('hidden');
-  loadAssignments(JSON.parse(localStorage.getItem(SESSION_KEY)).studentId);
+function setTab(mode){
+  tabTodo().classList.toggle('active', mode==='todo');
+  tabCalendar().classList.toggle('active', mode==='calendar');
 }
 
 /* =========================
@@ -210,22 +246,18 @@ function showTodo(){
 function restoreSession(){
   const raw = localStorage.getItem(SESSION_KEY);
   if(!raw) return;
-  try{
-    const student = JSON.parse(raw);
-    showPortal(student);
-    loadAssignments(student.studentId);
-  }catch(e){}
+  const student = JSON.parse(raw);
+  showPortal(student);
+  loadAssignments(student.studentId);
 }
 
 function restoreLoginInput(){
   const raw = localStorage.getItem(LOGIN_KEY);
   if(!raw) return;
-  try{
-    const d = JSON.parse(raw);
-    sidEl().value = d.sid || '';
-    pwdEl().value = d.pwd || '';
-    rememberEl().checked = true;
-  }catch(e){}
+  const d = JSON.parse(raw);
+  sidEl().value = d.sid || '';
+  pwdEl().value = d.pwd || '';
+  rememberEl().checked = true;
 }
 
 /* =========================
@@ -256,7 +288,9 @@ const studentInfo = ()=>document.getElementById('studentInfo');
 const loginError = ()=>document.getElementById('loginError');
 const todoArea = ()=>document.getElementById('todoArea');
 const allDoneMsg = ()=>document.getElementById('allDoneMessage');
-const calendarArea = ()=>document.getElementById('calendarArea');
+const calendarWrapper = ()=>document.getElementById('calendarWrapper');
+const tabTodo = ()=>document.getElementById('tabTodo');
+const tabCalendar = ()=>document.getElementById('tabCalendar');
 
 /* =========================
    起動
