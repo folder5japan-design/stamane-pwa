@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>スタマネ</title>
 <style>
- 
 *{box-sizing:border-box}
 body{
   margin:0;
@@ -38,8 +37,11 @@ button{
   border:none;
   cursor:pointer;
 }
+
+/* 主要ボタン */
 .btn-primary{background:#22c55e;color:#022c22;}
 .btn-secondary{background:#111827;color:#e5e7eb;border:1px solid #374151;}
+
 .meta{font-size:12px;color:#9ca3af;margin-top:4px;}
 .hidden{display:none;}
 
@@ -51,13 +53,15 @@ button{
 .item-title{font-size:15px;font-weight:600;}
 .badge{
   display:inline-block;font-size:11px;padding:2px 8px;
-  border-radius:999px;margin-right:4px;
+  border-radius:999px;margin-right:6px;border:1px solid rgba(255,255,255,.08);
 }
-.badge-not{background:#111827;color:#f97316;}
-.badge-sub{background:#052e16;color:#4ade80;}
-.badge-over{background:#450a0a;color:#fca5a5;}
+.badge-not{background:#2a0b0b;color:#fecaca;}     /* 未提出（一覧用） */
+.badge-sub{background:#0b1a35;color:#bfdbfe;}     /* 提出済（一覧用） */
+.badge-over{background:#2a1a00;color:#fde68a;}    /* 期限切れ（一覧用） */
 
-/* タブ */
+/* =========================
+   タブ（残す）
+   ========================= */
 .view-tabs{
   display:inline-flex;
   border-radius:999px;
@@ -74,13 +78,16 @@ button{
   cursor:pointer;
   background:transparent;
   color:#9ca3af;
+  margin-top:0;
 }
 .tab-btn-active{
   background:#22c55e;
   color:#022c22;
 }
 
-/* カレンダー */
+/* =========================
+   カレンダー
+   ========================= */
 .calendar-wrapper{
   margin-top:8px;
   border-radius:16px;
@@ -90,26 +97,28 @@ button{
 .cal-header{
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  gap:8px;
   margin-bottom:8px;
 }
-.cal-header-title{font-weight:600;}
+.cal-header-title{
+  font-weight:700;
+  flex:1;
+  text-align:center;
+  white-space:nowrap;          /* ✅ 1行固定 */
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 .cal-nav-btn{
   background:#111827;
-  color:#e5e7eb;              /* ← これを追加（文字色） */
+  color:#e5e7eb;
   border-radius:999px;
-  padding:4px 10px;
+  padding:6px 10px;
   font-size:12px;
   border:1px solid #374151;
   cursor:pointer;
+  margin-top:0;
+  white-space:nowrap;
 }
-.cal-nav-btn:hover{
-  background:#1f2937;         /* 任意：ホバー時に少し明るく */
-}
-.cal-nav-btn:active{
-  transform: translateY(1px);  /* 任意：押した感 */
-}
-
 .cal-weekdays,.cal-grid{
   display:grid;
   grid-template-columns:repeat(7,1fr);
@@ -122,233 +131,106 @@ button{
   color:#9ca3af;
 }
 .cal-cell{
-  min-height:70px;
-  padding:4px;
-  border-radius:8px;
-  border:1px solid transparent;
+  min-height:64px;
+  padding:6px 6px 8px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.06);
   text-align:left;
   font-size:11px;
   position:relative;
   cursor:pointer;
+  background:#020617;
 }
 .cal-cell-empty{
   cursor:default;
-  color:#6b7280;          /* ← 日付が見える色 */
+  color:#6b7280;
   background:#020617;
+  border-color:transparent;
 }
-
 .cal-cell-day{
   font-size:12px;
-  font-weight:600;
-  margin-bottom:2px;
-}
-.cal-cell-hover:hover{
-  border-color:#374151;
-  background:#020617;
-}
-.cal-overdue{
-  background:rgba(248,113,113,0.07);
-}
-.cal-submitted{
-  background:rgba(74,222,128,0.05);
-}
-.cal-has{
-  background:rgba(245,158,11,0.04);
-}
-.cal-selected{
-  border-color:#22c55e;
-  box-shadow:0 0 0 1px rgba(34,197,94,0.4);
+  font-weight:800;
+  margin-bottom:4px;
 }
 
-/* カレンダー内宿題カード */
-.cal-hw-list{
-  margin-top:2px;
+/* ✅ 日付セル全体の色：全未提出=赤 / 一部=黄 / 全提出=青 */
+.cal-all-pending{
+  background:rgba(239,68,68,0.16);   /* 日付セル赤（薄め） */
 }
-.cal-hw{
-  border-radius:8px;
-  border:1px solid #1f2937;
-  background:#020617;
-  padding:2px 4px;
-  margin-top:2px;
+.cal-partial{
+  background:rgba(245,158,11,0.16);  /* 日付セル黄（薄め） */
 }
+.cal-all-submitted{
+  background:rgba(59,130,246,0.16);  /* 日付セル青（薄め） */
+}
+
+/* カレンダー内2文字バッジ（小さく） */
+.cal-hw-list{display:flex;flex-wrap:wrap;gap:4px;}
+.cal-hw{display:inline-flex;align-items:center;gap:4px;margin:0;}
 .cal-hw-title{
+  margin:0;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background:#0b1220;
+  color:#e5e7eb;
   font-size:11px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  font-weight:800;
+  line-height:1;
+  cursor:pointer;
 }
-.cal-hw-meta{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-top:2px;
+
+/* ✅ 宿題バッジ色：未提出=赤 / 提出=青 / 期限切れ=橙 */
+.cal-hw-title.pending{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.35);color:#fecaca;}
+.cal-hw-title.submitted{background:rgba(59,130,246,.18);border-color:rgba(59,130,246,.35);color:#bfdbfe;}
+.cal-hw-title.overdue{background:rgba(245,158,11,.18);border-color:rgba(245,158,11,.35);color:#fde68a;}
+
+/* 今日の枠 */
+.cal-today{
+  outline:2px solid rgba(34,197,94,.7);
+  outline-offset:1px;
 }
-.cal-hw-status{
-  font-size:10px;
-  padding:1px 6px;
-  border-radius:999px;
-}
-.cal-hw-status-pending{
-  background:#111827;
-  color:#f97316;
-}
-.cal-hw-status-submitted{
-  background:#052e16;
-  color:#4ade80;
-}
-.cal-hw-status-overdue{
-  background:#450a0a;
-  color:#fca5a5;
-}
-.cal-hw-open{
-  margin-top:0;
-  padding:2px 8px;
-  font-size:10px;
-  border-radius:999px;
-}
+
 /* =========================
-   📱 スマホ用レイアウト調整
+   一覧：日付見出し
+   ========================= */
+.date-section{
+  margin-top:14px;
+  padding-top:10px;
+  border-top:1px solid #1f2937;
+}
+.date-title{
+  font-weight:800;
+  font-size:13px;
+  color:#e5e7eb;
+  margin-bottom:8px;
+}
+.small-note{font-size:12px;color:#9ca3af;margin-top:6px}
+
+/* =========================
+   📱 スマホ調整
    ========================= */
 @media (max-width: 768px) {
+  body{font-size:16px;}
+  .app{padding:10px;}
+  .card{padding:14px;border-radius:12px;}
+  h1{font-size:18px;}
 
-  body{
-    font-size:16px; /* 全体の文字を大きく */
-  }
+  input{font-size:16px;padding:10px 12px;}
 
-  .app{
-    padding:10px;
-  }
+  /* ✅ “全ボタンが100%” をやめる（これが崩れの原因になりがち） */
+  .btn-primary,.btn-secondary{width:100%;font-size:15px;padding:10px 14px;}
 
-  .card{
-    padding:14px;
-    border-radius:12px;
-  }
-
-  h1{
-    font-size:18px;
-  }
-
-  h2{
-    font-size:16px;
-  }
-
-  label{
-    font-size:14px;
-  }
-
-  input, select{
-    font-size:16px;
-    padding:10px 12px; /* 指で押しやすく */
-  }
-
-  button{
-    font-size:15px;
-    padding:10px 14px;
-    width:100%;       /* ボタンは横いっぱい */
-  }
-
-  .btn-secondary{
-    margin-top:10px;
-  }
-
-  table{
-    font-size:13px;
-  }
-
-  th, td{
-    padding:8px 6px;
-  }
-
-  /* テーブルが横にあふれたらスクロール */
-  .table-wrap{
-    overflow-x:auto;
-  }
-
+  .calendar-wrapper{padding:10px;}
+  .cal-header-title{font-size:13px;}
+  .cal-nav-btn{padding:6px 8px;font-size:12px;}
+  .cal-cell{min-height:54px;padding:6px 5px 8px;}
+  .cal-cell-day{font-size:12px;}
+  .cal-hw-title{font-size:11px;padding:3px 7px;}
 }
-/* =====================================================
-   📅 カレンダー内：提出状態を「色だけ」で表現
-   ===================================================== */
-
-.cal-hw-dot{
-  display:inline-block;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  margin-left:4px;
-}
-
-.cal-hw-dot-pending{ background:#ef4444; }    /* 未提出：赤 */
-.cal-hw-dot-overdue{ background:#f59e0b; }    /* 一部未提出：黄 */
-.cal-hw-dot-submitted{ background:#3b82f6; }  /* 提出済：青 */
-
-
-/* =====================================================
-   📱 スマホ：カレンダーは縦に伸びてもOK
-   ===================================================== */
-@media (max-width: 768px) {
-
-  .cal-cell{
-    min-height:auto;
-    padding:6px 4px;
-  }
-
-  .cal-hw{
-    display:flex;
-    align-items:center;
-    gap:4px;
-    padding:2px 0;
-  }
-
-  .cal-hw-title{
-    font-size:12px;
-    font-weight:600;
-    white-space:nowrap;
-  }
-}
- /* ===============================
-   📱 カレンダー内：2文字表示を横に確保
-   =============================== */
-
-@media (max-width: 768px) {
-
-  /* 宿題1件を横並びにする */
-  .cal-hw{
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 2px 0;
-  }
-
-  /* 2文字タイトルを安定表示 */
-  .cal-hw-title{
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-}
-
-/* ===============================
-   📅 カレンダー：日付セル全体の色
-   =============================== */
-
-.cal-overdue{
-  background:rgba(239,68,68,0.18);   /* 赤 */
-}
-
-.cal-has{
-  background:rgba(245,158,11,0.18);  /* 黄 */
-}
-
-.cal-submitted{
-  background:rgba(59,130,246,0.18);  /* 青 */
-}
-/* ● ドットを使わない */
-.cal-hw-dot{
-  display:none !important;
-}
-
 </style>
 </head>
+
 <body>
 <div class="app">
 
@@ -360,46 +242,45 @@ button{
     <label>パスワード</label>
     <input id="pwd" type="password" autocomplete="off">
     <div class="meta">
-      <label style="display:flex;align-items:center;gap:4px;margin-top:4px;">
+      <label style="display:flex;align-items:center;gap:6px;margin-top:6px;">
         <input type="checkbox" id="showPwd" style="width:auto;margin:0;">
         <span>パスワードを表示する</span>
       </label>
     </div>
     <button class="btn-primary" onclick="login()">ログイン</button>
-    <div id="loginStatus" class="meta" style="margin-top:4px;"></div>
-    <div id="loginError" class="meta" style="color:#fca5a5;margin-top:4px;"></div>
+    <div id="loginStatus" class="meta" style="margin-top:6px;"></div>
+    <div id="loginError" class="meta" style="color:#fca5a5;margin-top:6px;"></div>
   </div>
 
   <!-- ポータルカード -->
   <div class="card hidden" id="portalCard">
     <div class="meta" id="studentInfo"></div>
 
-    <!-- タブ -->
-    <button class="btn-secondary" onclick="refreshAssignments()">
-      🔄 更新
-    </button>
+    <button class="btn-secondary" onclick="refreshAssignments()">🔄 更新</button>
 
+    <!-- タブ：Calendarは「カレンダー＋一覧」、Listは「一覧だけ」 -->
     <div class="view-tabs">
-      <button id="tabCalendar" class="tab-btn tab-btn-active" type="button">カレンダー表示</button>
-      <button id="tabList" class="tab-btn" type="button">一覧表示</button>
+      <button id="tabCalendar" class="tab-btn tab-btn-active" type="button">カレンダー</button>
+      <button id="tabList" class="tab-btn" type="button">一覧のみ</button>
     </div>
 
-    <!-- カレンダービュー -->
+    <!-- カレンダー -->
     <div id="calendarWrapper" class="calendar-wrapper">
       <div class="cal-header">
-        <button class="cal-nav-btn" onclick="changeMonth(-1)">＜ 前の月</button>
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">＜ 前</button>
         <div class="cal-header-title" id="calMonthTitle"></div>
-        <button class="cal-nav-btn" onclick="changeMonth(1)">次の月 ＞</button>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">次 ＞</button>
       </div>
       <div class="cal-weekdays">
         <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
       </div>
       <div class="cal-grid" id="calGrid"></div>
+      <div class="small-note">※ 日付をタップすると、下の一覧の該当日付まで移動します。</div>
     </div>
 
-    <div class="meta" id="selectedDateInfo" style="margin-top:8px;"></div>
+    <div class="meta" id="selectedDateInfo" style="margin-top:10px;"></div>
 
-    <!-- 宿題一覧（カレンダー or 全体） -->
+    <!-- 宿題一覧 -->
     <div class="list" id="assignmentList"></div>
 
     <button class="btn-secondary" onclick="logout()">ログアウト</button>
@@ -408,42 +289,16 @@ button{
 </div>
 
 <script>
-// ==========================================================
-// 1. GASテンプレート変数（Code.gs から埋め込まれる）
-// ==========================================================
- function scrollToAssignmentDate(dateStr){
-  const list = document.getElementById('assignmentList');
-  if(!list) return;
-
-  const items = list.querySelectorAll('.item');
-  for(const item of items){
-    if(item.textContent.includes(dateStr)){
-      item.scrollIntoView({behavior:'smooth',block:'start'});
-      break;
-    }
-  }
+/* ==========================================================
+   0) 設定
+   ========================================================== */
+function baseExecUrl(){
+  return 'https://script.google.com/macros/s/AKfycbw9wrLj_SgmFusn_8YwMJ_I9b9_36JpMdbGK4fPJpXOXVD-BI844jqXgZBGkbdFjFD2/exec';
 }
 
- function restoreSessionIfExists(){
-  const saved = loadSession();
-  if(!saved) return;
-
-  currentStudent = saved;
-  document.getElementById('loginCard').classList.add('hidden');
-  document.getElementById('portalCard').classList.remove('hidden');
-
-  const name  = saved.name || '';
-  const sid   = saved.studentId || '';
-  const grade = saved.grade || saved.学年 || '';
-  const cls   = saved.class || saved.クラス || '';
-
-  document.getElementById('studentInfo').textContent =
-    `${name} さん（ID: ${sid} / 学年: ${grade || '-'} / クラス: ${cls || '-'})`;
-
-  initCalendarState();
-  loadAssignments();
-}
-// ====== A: ログイン保存（PWAで再ログイン不要にする）======
+/* ==========================================================
+   1) セッション保存（PWAで再ログイン不要）
+   ========================================================== */
 const SESSION_KEY = 'stamane_session_v1';
 
 function saveSession(student){
@@ -461,55 +316,43 @@ function clearSession(){
   try { localStorage.removeItem(SESSION_KEY); } catch(e){}
 }
 
-const GAS_SID  = '<?= studentId ?>';
-const GAS_PWD  = '<?= password ?>';
-const GAS_AUTO = '<?= auto ?>';
-
+/* ==========================================================
+   2) 状態
+   ========================================================== */
 let currentStudent = null;
 let allAssignments = [];
 let currentYear, currentMonth;
-let selectedDateStr = null;
-let viewMode = 'calendar'; // 'calendar' or 'list'
+let viewMode = 'calendar'; // 'calendar' or 'listOnly'
 
-// ==========================================================
-// 自動入力 & 自動ログイン
-// ==========================================================
-function autoFill(id, value) {
-  const el = document.getElementById(id);
-  if (el && value) {
-    el.value = value;
+/* ==========================================================
+   3) 便利関数
+   ========================================================== */
+function formatDateStr(dt){
+  const y = dt.getFullYear();
+  const m = ('0'+(dt.getMonth()+1)).slice(-2);
+  const d = ('0'+dt.getDate()).slice(-2);
+  return `${y}-${m}-${d}`;
+}
+
+function getStatusClass(a){
+  const s = String(a.status || '').trim();
+  const overdue = !!a.overdue;
+  if (overdue && (s === '' || s === '未提出')) return 'overdue';
+  if (s === '提出' || s === '提出済') return 'submitted';
+  return 'pending';
+}
+
+/* ✅ “日付タップで一覧の該当日付へ” */
+function scrollToAssignmentDate(dateStr){
+  const el = document.getElementById('date-' + dateStr);
+  if(el){
+    el.scrollIntoView({behavior:'smooth', block:'start'});
   }
 }
 
-function autoLoginIfPossible() {
-  const sid  = (GAS_SID  || '').trim();
-  const pwd  = (GAS_PWD  || '').trim();
-  const auto = (GAS_AUTO || '').trim();
-
-  if (auto === '1' && sid && pwd) {
-    autoFill('sid', sid);
-    autoFill('pwd', pwd);
-
-    const st = document.getElementById('loginStatus');
-    st.textContent = '自動ログイン中です。しばらくお待ちください…';
-
-    setTimeout(() => {
-      login();
-    }, 300);
-  }
-}
-
-// スクリプト読み込み後すぐに実行（scriptがbody末尾なのでDOMは既にある）
-autoLoginIfPossible();
-
-// ==========================================================
-// API ベースURL
-// ==========================================================
-function baseExecUrl(){
-  return 'https://script.google.com/macros/s/AKfycbw9wrLj_SgmFusn_8YwMJ_I9b9_36JpMdbGK4fPJpXOXVD-BI844jqXgZBGkbdFjFD2/exec';
-}
-
-/********** ログイン **********/
+/* ==========================================================
+   4) ログイン
+   ========================================================== */
 function login(){
   const sid = document.getElementById('sid').value.trim();
   const pwd = document.getElementById('pwd').value.trim();
@@ -523,7 +366,7 @@ function login(){
     return;
   }
 
-  st.textContent = 'ログイン中です。しばらくお待ちください…';
+  st.textContent = 'ログイン中です…';
 
   const url = baseExecUrl()
     + '?api=login&studentId=' + encodeURIComponent(sid)
@@ -548,6 +391,7 @@ function login(){
 
 function onLoginSuccess(student){
   currentStudent = student;
+
   document.getElementById('loginCard').classList.add('hidden');
   document.getElementById('portalCard').classList.remove('hidden');
 
@@ -559,19 +403,21 @@ function onLoginSuccess(student){
   document.getElementById('studentInfo').textContent =
     `${name} さん（ID: ${sid} / 学年: ${grade || '-'} / クラス: ${cls || '-'})`;
 
+  saveSession(student);
   initCalendarState();
   loadAssignments();
-  saveSession(student);
 }
 
 function logout(){
-  clearSession(); // ★ 追加
+  clearSession();
   currentStudent = null;
   allAssignments = [];
+
   document.getElementById('sid').value = '';
   document.getElementById('pwd').value = '';
   document.getElementById('loginStatus').textContent = '';
   document.getElementById('loginError').textContent = '';
+
   document.getElementById('portalCard').classList.add('hidden');
   document.getElementById('loginCard').classList.remove('hidden');
   document.getElementById('assignmentList').innerHTML = '';
@@ -579,13 +425,30 @@ function logout(){
   document.getElementById('selectedDateInfo').textContent = '';
 }
 
-/********** カレンダー & 宿題 **********/
+/* ==========================================================
+   5) カレンダー初期化
+   ========================================================== */
 function initCalendarState(){
   const today = new Date();
   currentYear = today.getFullYear();
   currentMonth = today.getMonth();
-  selectedDateStr = null;
 }
+
+function changeMonth(delta){
+  currentMonth += delta;
+  if(currentMonth < 0){
+    currentMonth = 11;
+    currentYear--;
+  }else if(currentMonth > 11){
+    currentMonth = 0;
+    currentYear++;
+  }
+  renderCalendar();
+}
+
+/* ==========================================================
+   6) 宿題読み込み（読み込みエラー対策を強化）
+   ========================================================== */
 function loadAssignments(){
   if(!currentStudent) return;
 
@@ -597,30 +460,29 @@ function loadAssignments(){
     + encodeURIComponent(currentStudent.studentId);
 
   fetch(url)
-    .then(r => r.json())
+    .then(async (r) => {
+      const text = await r.text();
+      try {
+        return JSON.parse(text);
+      } catch(e){
+        // ✅ JSONじゃない（HTMLが返ってきた等）場合でも「原因表示」して止まらない
+        return { ok:false, error:'JSON解析に失敗しました（APIの返りがJSONではない）', raw:text.slice(0,200) };
+      }
+    })
     .then(data => {
       if(!data.ok){
-        list.innerHTML =
-          '<div class="meta">'+(data.error || '読み込みエラーです。')+'</div>';
+        const raw = data.raw ? `<div class="meta" style="margin-top:6px;white-space:pre-wrap;opacity:.8">${escapeHtml(data.raw)}</div>` : '';
+        list.innerHTML = `<div class="meta">${escapeHtml(data.error || '読み込みエラーです。')}</div>${raw}`;
         return;
       }
 
-      // ① 宿題データ保持
-      allAssignments = data.assignments || [];
+      allAssignments = Array.isArray(data.assignments) ? data.assignments : [];
 
-      // ② カレンダー描画
       renderCalendar();
+      renderAssignmentListAll();  // ✅ 一覧は常に全件表示（消さない）
 
-      // ③ 一覧は必ず全件表示
-      viewMode = 'list';
-      setTabActive('list');
-      renderAssignmentListForDate(null);
-
-      // ④ 説明文
       const info = document.getElementById('selectedDateInfo');
-      if(info){
-        info.textContent = 'すべての宿題一覧です。';
-      }
+      info.textContent = 'すべての宿題一覧です。';
     })
     .catch(e => {
       console.error(e);
@@ -628,30 +490,19 @@ function loadAssignments(){
     });
 }
 
-
-function changeMonth(delta){
-  currentMonth += delta;
-  if(currentMonth < 0){
-    currentMonth = 11;
-    currentYear--;
-  }else if(currentMonth > 11){
-    currentMonth = 0;
-    currentYear++;
-  }
-  selectedDateStr = null;
-  renderCalendar();
-  if (viewMode === 'calendar') {
-    renderAssignmentListForDate(null);
-  }
+function escapeHtml(str){
+  return String(str || '').replace(/[&<>"']/g, (m) => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
 }
 
-function formatDateStr(dt){
-  const y = dt.getFullYear();
-  const m = ('0'+(dt.getMonth()+1)).slice(-2);
-  const d = ('0'+dt.getDate()).slice(-2);
-  return `${y}-${m}-${d}`;
-}
-
+/* ==========================================================
+   7) カレンダー描画（完全差し替え）
+   - 日付セル色：全未提出=赤 / 一部=黄 / 全提出=青
+   - 宿題は2文字バッジ（小さく）
+   - 日付タップ：一覧の該当日付へスクロール（一覧は消さない）
+   - 2文字タップ：openUrlへ（※ここは要望通り）
+   ========================================================== */
 function renderCalendar(){
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
@@ -659,34 +510,28 @@ function renderCalendar(){
   const title = document.getElementById('calMonthTitle');
   title.textContent = `${currentYear}年 ${currentMonth + 1}月`;
 
-  /* =========================
-     日付 → 宿題配列 のMap
-     ========================= */
+  // due -> list
   const mapByDate = {};
   (allAssignments || []).forEach(a => {
-    if(!a.due) return;
-    if(!mapByDate[a.due]) mapByDate[a.due] = [];
-    mapByDate[a.due].push(a);
+    const due = String(a.due || '').trim();
+    if(!due) return;
+    if(!mapByDate[due]) mapByDate[due] = [];
+    mapByDate[due].push(a);
   });
 
   const firstDay = new Date(currentYear, currentMonth, 1);
   const startWeekday = firstDay.getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const todayStr = formatDateStr(new Date());
 
-  /* =========================
-     月初の空白セル
-     ========================= */
+  // 空白
   for(let i = 0; i < startWeekday; i++){
     const empty = document.createElement('div');
     empty.className = 'cal-cell cal-cell-empty';
     grid.appendChild(empty);
   }
 
-  const todayStr = formatDateStr(new Date());
-
-  /* =========================
-     日付セル本体
-     ========================= */
+  // 日付セル
   for(let day = 1; day <= daysInMonth; day++){
     const dateObj = new Date(currentYear, currentMonth, day);
     const dateStr = formatDateStr(dateObj);
@@ -694,7 +539,6 @@ function renderCalendar(){
     const cell = document.createElement('div');
     cell.className = 'cal-cell';
 
-    /* 日付数字 */
     const dayLabel = document.createElement('div');
     dayLabel.className = 'cal-cell-day';
     dayLabel.textContent = day;
@@ -702,64 +546,61 @@ function renderCalendar(){
 
     const items = mapByDate[dateStr] || [];
 
-    /* =========================
-       提出状況による色判定
-       ========================= */
-    let total = items.length;
-    let submitted = 0;
+    // ✅ 日付セル全体の色判定
+    if(items.length > 0){
+      const total = items.length;
+      const submitted = items.filter(a => {
+        const s = String(a.status || '').trim();
+        return (s === '提出' || s === '提出済');
+      }).length;
 
-    items.forEach(a => {
-      if(a.status === '提出' || a.status === '提出済'){
-        submitted++;
-      }
-    });
-
-    if(total > 0){
       if(submitted === 0){
-        cell.classList.add('cal-overdue');     // 全未提出（赤）
+        cell.classList.add('cal-all-pending');
       }else if(submitted < total){
-        cell.classList.add('cal-has');         // 一部提出（黄）
+        cell.classList.add('cal-partial');
       }else{
-        cell.classList.add('cal-submitted');   // 全提出（青）
+        cell.classList.add('cal-all-submitted');
       }
-    }
 
-    /* =========================
-       カレンダー内：2文字表示
-       ========================= */
-    const listDiv = document.createElement('div');
-    listDiv.className = 'cal-hw-list';
+      // 2文字バッジ
+      const listDiv = document.createElement('div');
+      listDiv.className = 'cal-hw-list';
 
-    items.forEach(a => {
-      const hw = document.createElement('div');
-      hw.className = 'cal-hw';
+      items.forEach(a => {
+        const hw = document.createElement('div');
+        hw.className = 'cal-hw';
 
-      const titleText = String(a.title || '未');
-      const titleSpan = document.createElement('span');
-      titleSpan.className = 'cal-hw-title';
-      titleSpan.textContent = titleText.slice(0, 2);
+        const t = String(a.title || '未');
+        const badge = document.createElement('button');
+        badge.type = 'button';
+        badge.className = 'cal-hw-title ' + getStatusClass(a);
+        badge.textContent = t.slice(0, 2);
 
-      /* クリック → 一覧の該当日付へ */
-      titleSpan.addEventListener('click', (e) => {
-        e.stopPropagation();
-        scrollToAssignmentDate(a.due);
+        // ✅ 2文字タップ：その宿題を開く（要望）
+        badge.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if(a.openUrl){
+            window.open(a.openUrl, '_blank');
+          }else{
+            alert('URLが設定されていません');
+          }
+        });
+
+        hw.appendChild(badge);
+        listDiv.appendChild(hw);
       });
 
-      hw.appendChild(titleSpan);
-      listDiv.appendChild(hw);
-    });
-
-    if(items.length > 0){
       cell.appendChild(listDiv);
     }
 
-    /* 今日の強調 */
+    // 今日
     if(dateStr === todayStr){
-      cell.style.outline = '2px solid #22c55e';
+      cell.classList.add('cal-today');
     }
 
-    /* 日付セルタップ → 一覧スクロール */
+    // ✅ 日付セルタップ：一覧の該当日付へスクロール（一覧は消さない）
     cell.addEventListener('click', () => {
+      // 一覧のみモードでも見えるように、必要ならタブをcalendarに戻す
       scrollToAssignmentDate(dateStr);
     });
 
@@ -767,106 +608,149 @@ function renderCalendar(){
   }
 }
 
-
-function renderAssignmentListForDate(dateStr){
+/* ==========================================================
+   8) 一覧描画（常に全件、日付見出しつき）
+   - ここで “一覧が消える/その日だけ” を完全に排除
+   ========================================================== */
+function renderAssignmentListAll(){
   const list = document.getElementById('assignmentList');
   list.innerHTML = '';
 
-  const info = document.getElementById('selectedDateInfo');
+  // dueでグルーピング（dueなしも入れる）
+  const groups = {};
+  (allAssignments || []).forEach(a => {
+    const due = String(a.due || '').trim() || '未設定';
+    if(!groups[due]) groups[due] = [];
+    groups[due].push(a);
+  });
 
-    let items = (allAssignments || []).filter(a => {
-    const s = String(a.status || '').trim();
-    return s === '' || s === '未提出';
-    });
-  if (viewMode === 'list') {
-    // 一覧表示モード: 全件表示
-    info.textContent = '';
-    items = items.slice();
-  } else {
-    // カレンダーモード
-    if(dateStr){
-      info.textContent = `${dateStr} の宿題一覧です。`;
-      items = items.filter(a => a.due === dateStr);
-    }else{
-      info.textContent = 'すべての宿題一覧です。カレンダーの日付をクリックすると、その日の宿題だけ表示されます。';
-    }
-  }
+  const keys = Object.keys(groups).sort((a,b) => {
+    if(a === '未設定') return 1;
+    if(b === '未設定') return -1;
+    return a.localeCompare(b);
+  });
 
-  if(!items.length){
-    list.innerHTML = '<div class="meta">該当する宿題はありません。</div>';
+  if(keys.length === 0){
+    list.innerHTML = '<div class="meta">宿題がありません。</div>';
     return;
   }
-items.forEach(a=>{
-  const div = document.createElement('div');
-  div.className = 'item';
 
-  const title = document.createElement('div');
-  title.className = 'item-title';
-  title.textContent = a.title || '(タイトル未設定)';
-  div.appendChild(title);
-
-  const btn = document.createElement('button');
-  btn.className = 'btn-primary';
-  btn.textContent = '宿題を開く';
-  btn.type = 'button';
-  btn.onclick = ()=>{
-    if(a.openUrl){
-      window.open(a.openUrl,'_blank');
+  keys.forEach(due => {
+    const section = document.createElement('div');
+    section.className = 'date-section';
+    if(due !== '未設定'){
+      section.id = 'date-' + due; // ✅ 日付スクロール先
     }
-  };
-  div.appendChild(btn);
 
-  list.appendChild(div);
-});
+    const dt = document.createElement('div');
+    dt.className = 'date-title';
+    dt.textContent = (due === '未設定') ? '期限未設定' : due;
+    section.appendChild(dt);
+
+    groups[due].forEach(a => {
+      const div = document.createElement('div');
+      div.className = 'item';
+
+      const title = document.createElement('div');
+      title.className = 'item-title';
+      title.textContent = a.title || '(タイトル未設定)';
+      div.appendChild(title);
+
+      // ステータス表示（小さく）
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+
+      const sClass = getStatusClass(a);
+      const badge = document.createElement('span');
+      badge.className = 'badge ' + (sClass === 'submitted' ? 'badge-sub' : (sClass === 'overdue' ? 'badge-over' : 'badge-not'));
+      badge.textContent = (sClass === 'submitted') ? '提出済' : (sClass === 'overdue' ? '期限切れ' : '未提出');
+      meta.appendChild(badge);
+
+      if(a.points != null){
+        const sp = document.createElement('span');
+        sp.textContent = `ポイント: ${a.points}`;
+        meta.appendChild(sp);
+      }
+      div.appendChild(meta);
+
+      // ✅ 一覧のボタン：宿題を開く（ここはそのままでOK）
+      const btn = document.createElement('button');
+      btn.className = 'btn-primary';
+      btn.textContent = '宿題を開く';
+      btn.type = 'button';
+      btn.onclick = () => {
+        if(a.openUrl){
+          window.open(a.openUrl,'_blank');
+        }else{
+          alert('URLが設定されていません');
+        }
+      };
+      div.appendChild(btn);
+
+      // LINEメモ等
+      if(a.lineNote){
+        const ln = document.createElement('div');
+        ln.className = 'meta';
+        ln.textContent = a.lineNote;
+        div.appendChild(ln);
+      }
+
+      section.appendChild(div);
+    });
+
+    list.appendChild(section);
+  });
 }
 
-
-/********** タブ切り替え **********/
+/* ==========================================================
+   9) タブ切替
+   - Calendar: カレンダー＋一覧
+   - ListOnly: 一覧のみ（カレンダー非表示）
+   ========================================================== */
 function setTabActive(mode){
   const tabCal  = document.getElementById('tabCalendar');
   const tabList = document.getElementById('tabList');
-  if (mode === 'calendar') {
+
+  if(mode === 'calendar'){
     tabCal.classList.add('tab-btn-active');
     tabList.classList.remove('tab-btn-active');
-  } else {
+    document.getElementById('calendarWrapper').classList.remove('hidden');
+    viewMode = 'calendar';
+  }else{
     tabCal.classList.remove('tab-btn-active');
     tabList.classList.add('tab-btn-active');
+    document.getElementById('calendarWrapper').classList.add('hidden');
+    viewMode = 'listOnly';
   }
 }
 
-document.getElementById('tabCalendar').addEventListener('click', ()=>{
-  viewMode = 'calendar';
-  setTabActive('calendar');
-  document.getElementById('calendarWrapper').classList.remove('hidden');
-  document.getElementById('selectedDateInfo').classList.remove('hidden');
-  renderAssignmentListForDate(selectedDateStr);
-});
+document.getElementById('tabCalendar').addEventListener('click', ()=> setTabActive('calendar'));
+document.getElementById('tabList').addEventListener('click', ()=> setTabActive('list'));
 
-document.getElementById('tabList').addEventListener('click', ()=>{
-  viewMode = 'list';
-  setTabActive('list');
-  document.getElementById('calendarWrapper').classList.add('hidden');
-  document.getElementById('selectedDateInfo').classList.add('hidden');
-  renderAssignmentListForDate(null);
-});
-
-/********** パスワード表示切替 **********/
+/* ==========================================================
+   10) パスワード表示切替（確実に動く）
+   ========================================================== */
 document.getElementById('showPwd').addEventListener('change', (e)=>{
   const pwd = document.getElementById('pwd');
   pwd.type = e.target.checked ? 'text' : 'password';
 });
+
 function refreshAssignments(){
   if(!currentStudent) return;
-  selectedDateStr = null;
   loadAssignments();
 }
-// ====== C: 起動時に自動復帰（保存済みならログイン画面を飛ばす）======
-(function(){
+
+/* ==========================================================
+   11) 起動時：セッション復帰（保存済みならログイン画面を飛ばす）
+   ========================================================== */
+(function boot(){
+  // デフォは Calendar表示
+  setTabActive('calendar');
+
   const saved = loadSession();
   if(!saved) return;
 
   currentStudent = saved;
-
   document.getElementById('loginCard').classList.add('hidden');
   document.getElementById('portalCard').classList.remove('hidden');
 
@@ -881,23 +765,7 @@ function refreshAssignments(){
   initCalendarState();
   loadAssignments();
 })();
-
-
 </script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
