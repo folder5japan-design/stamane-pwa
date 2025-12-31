@@ -797,29 +797,28 @@ function renderAssignmentListForDate(dateStr){
     return;
   }
 items.forEach(a=>{
-  const hw = document.createElement('div');
-  hw.className = 'cal-hw';
+  const div = document.createElement('div');
+  div.className = 'item';
 
-  const t = String(a.title || '(タイトル未設定)');
-  const two = t.slice(0, 2);
+  const title = document.createElement('div');
+  title.className = 'item-title';
+  title.textContent = a.title || '(タイトル未設定)';
+  div.appendChild(title);
 
-  // 2文字を「ボタン化」して宿題を開く
-  const titleBtn = document.createElement('button');
-  titleBtn.type = 'button';
-  titleBtn.className = 'cal-hw-title';
-  titleBtn.textContent = two;
-  titleBtn.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    if(!a.openUrl){
-      alert('URLが設定されていません');
-      return;
+  const btn = document.createElement('button');
+  btn.className = 'btn-primary';
+  btn.textContent = '宿題を開く';
+  btn.type = 'button';
+  btn.onclick = ()=>{
+    if(a.openUrl){
+      window.open(a.openUrl,'_blank');
     }
-    window.open(a.openUrl,'_blank');
-  });
+  };
+  div.appendChild(btn);
 
-  hw.appendChild(titleBtn);
-  listDiv.appendChild(hw);
+  list.appendChild(div);
 });
+
 
 
 
@@ -851,7 +850,7 @@ document.getElementById('tabList').addEventListener('click', ()=>{
   document.getElementById('selectedDateInfo').classList.add('hidden');
   renderAssignmentListForDate(null);
 });
-}
+
 /********** パスワード表示切替 **********/
 document.getElementById('showPwd').addEventListener('change', (e)=>{
   const pwd = document.getElementById('pwd');
@@ -883,16 +882,12 @@ function refreshAssignments(){
   initCalendarState();
   loadAssignments();
 })();
-function renderAllAssignments(){
-  const list = document.getElementById('assignmentList');
-  list.innerHTML = '';
-  renderAssignmentListForDate(null);
-}
 
 
 </script>
 </body>
 </html>
+
 
 
 
