@@ -294,6 +294,13 @@ button{
 </div>
 
 <script>
+function daysBetween(dateStr){
+  const today = new Date();
+  const d = new Date(dateStr);
+  const diff = today - d;
+  return diff / (1000 * 60 * 60 * 24);
+}
+
 /* ==========================================================
    0) 設定
    ========================================================== */
@@ -484,6 +491,7 @@ function loadAssignments(){
       allAssignments = Array.isArray(data.assignments) ? data.assignments : [];
 
       renderCalendar();
+      renderAssignmentListSafe();
       renderAssignmentListAll();  // ✅ 一覧は常に全件表示（消さない）
 
       const info = document.getElementById('selectedDateInfo');
@@ -744,6 +752,60 @@ function refreshAssignments(){
   if(!currentStudent) return;
   loadAssignments();
 }
+function renderAssignmentListSafe() {
+  const list = document.getElementById('assignmentList');
+  if (!list) return;
+
+  list.innerHTML = '';
+
+  if (!Array.isArray(allAssignments)) {
+    list.innerHTML = '<div class="meta">宿題データがありません。</div>';
+    return;
+  }
+
+  const today = new Date();
+
+  allAssignments.forEach(a => {
+    const status = String(a.status || '').trim();
+
+    // 提出済み：10日超は表示しない
+    if (status === '提出' || status === '提出済') {
+      if (!a.due) return;
+      const d = new Date(a.due);
+      if ((today - d) / 86400000 > 10) return;
+    }
+
+    const div = document.createElement('div');
+    div.className = 'item';
+
+    const title = document.createElement('div');
+    title.className = 'item-title';
+    title.textContent = a.title || '(タイトル未設定)';
+    div.appendChild(title);
+
+    // 未提出のみ「宿題を開く」ボタン表示
+    if (status === '' || status === '未提出') {
+      const btn = document.createElement('button');
+      btn.className = 'btn-primary';
+      btn.textContent = '宿題を開く';
+      btn.type = 'button';
+      btn.onclick = () => {
+        if (a.openUrl) {
+          window.open(a.openUrl, '_blank');
+        }
+      };
+      div.appendChild(btn);
+    } else {
+      // 提出済み表示（ボタンなし）
+      const done = document.createElement('div');
+      done.className = 'meta';
+      done.textContent = '提出済み';
+      div.appendChild(done);
+    }
+
+    list.appendChild(div);
+  });
+}
 
 /* ==========================================================
    11) 起動時：セッション復帰（保存済みならログイン画面を飛ばす）
@@ -782,6 +844,7 @@ if ('serviceWorker' in navigator) {
 
 </body>
 </html>
+
 
 
 
