@@ -1,17 +1,37 @@
-self.addEventListener('install', e => {
-  self.skipWaiting();
-});
+const CACHE_NAME = 'stamane-cache-v3'; // ← 更新時に必ず番号を変える
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
+];
 
-self.addEventListener('activate', e => {
-  e.waitUntil(self.clients.claim());
-});
-
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+/* インストール */
+self.addEventListener('install', event => {
+  self.skipWaiting(); // ★ 新SWを即有効化
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
 });
-// v2
-self.addEventListener('install', e => {
-  self.skipWaiting();
+
+/* 有効化 */
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    Promise.all([
+      caches.keys().then(keys =>
+        Promise.all(
+          keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        )
+      ),
+      self.clients.claim() // ★ 既存ページを即支配
+    ])
+  );
+});
+
+/* fetch */
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    fetch(event.request).catch(() => caches.match(event.request))
+  );
 });
