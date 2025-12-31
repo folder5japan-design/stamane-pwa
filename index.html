@@ -342,6 +342,10 @@ button{
 .cal-submitted{
   background:rgba(59,130,246,0.18);  /* 青 */
 }
+/* ● ドットを使わない */
+.cal-hw-dot{
+  display:none !important;
+}
 
 </style>
 </head>
@@ -407,7 +411,20 @@ button{
 // ==========================================================
 // 1. GASテンプレート変数（Code.gs から埋め込まれる）
 // ==========================================================
-function restoreSessionIfExists(){
+ function scrollToAssignmentDate(dateStr){
+  const list = document.getElementById('assignmentList');
+  if(!list) return;
+
+  const items = list.querySelectorAll('.item');
+  for(const item of items){
+    if(item.textContent.includes(dateStr)){
+      item.scrollIntoView({behavior:'smooth',block:'start'});
+      break;
+    }
+  }
+}
+
+ function restoreSessionIfExists(){
   const saved = loadSession();
   if(!saved) return;
 
@@ -685,10 +702,18 @@ function renderCalendar(){
         const hw = document.createElement('div');
         hw.className = 'cal-hw';
 
-        const titleDiv = document.createElement('div');
-        titleDiv.className = 'cal-hw-title';
-        const t = String(a.title || '');
-        titleDiv.textContent = t.slice(0, 2);
+        const titleDiv = document.createElement('button');
+        titleDiv.className = 'cal-hw-title btn-primary';
+        titleDiv.textContent = t.slice(0,2);
+        titleDiv.type = 'button';
+        titleDiv.onclick = (e)=>{
+          e.stopPropagation();
+          if(!a.openUrl){
+            alert('URLが設定されていません');
+            return;
+          }
+          window.open(a.openUrl,'_blank');
+        };
 
 
         const metaDiv = document.createElement('div');
@@ -738,7 +763,8 @@ function renderCalendar(){
       setTabActive('calendar');
       document.getElementById('calendarWrapper').classList.remove('hidden');
       document.getElementById('selectedDateInfo').classList.remove('hidden');
-      renderAssignmentListForDate(dateStr);
+      scrollToAssignmentDate(dateStr);
+
     });
 
     grid.appendChild(cell);
@@ -905,6 +931,7 @@ function refreshAssignments(){
 </script>
 </body>
 </html>
+
 
 
 
