@@ -615,7 +615,7 @@ function loadAssignments(){
       // ③ 一覧は【必ず全件表示】する（←ここが重要）
       viewMode = 'list';
       setTabActive('list');
-      renderAllAssignments();
+      renderAssignmentListForDate(null); 
 
       // ④ 日付説明文は初期化
       const info = document.getElementById('selectedDateInfo');
@@ -893,6 +893,7 @@ function renderAllAssignments(){
 </script>
 </body>
 </html>
+
 
 
 
