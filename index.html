@@ -348,6 +348,23 @@ function restoreSessionIfExists(){
   initCalendarState();
   loadAssignments();
 }
+// ====== A: ログイン保存（PWAで再ログイン不要にする）======
+const SESSION_KEY = 'stamane_session_v1';
+
+function saveSession(student){
+  try { localStorage.setItem(SESSION_KEY, JSON.stringify(student)); } catch(e){}
+}
+function loadSession(){
+  try {
+    const s = localStorage.getItem(SESSION_KEY);
+    return s ? JSON.parse(s) : null;
+  } catch(e){
+    return null;
+  }
+}
+function clearSession(){
+  try { localStorage.removeItem(SESSION_KEY); } catch(e){}
+}
 
 const GAS_SID  = '<?= studentId ?>';
 const GAS_PWD  = '<?= password ?>';
@@ -449,6 +466,7 @@ function onLoginSuccess(student){
 
   initCalendarState();
   loadAssignments();
+  saveSession(student);
 }
 
 function logout(){
@@ -797,8 +815,30 @@ function refreshAssignments(){
   selectedDateStr = null;
   loadAssignments();
 }
-restoreSessionIfExists();
+// ====== C: 起動時に自動復帰（保存済みならログイン画面を飛ばす）======
+(function(){
+  const saved = loadSession();
+  if(!saved) return;
+
+  currentStudent = saved;
+
+  document.getElementById('loginCard').classList.add('hidden');
+  document.getElementById('portalCard').classList.remove('hidden');
+
+  const name  = saved.name || '';
+  const sid   = saved.studentId || '';
+  const grade = saved.grade || saved.学年 || '';
+  const cls   = saved.class || saved.クラス || '';
+
+  document.getElementById('studentInfo').textContent =
+    `${name} さん（ID: ${sid} / 学年: ${grade || '-'} / クラス: ${cls || '-'})`;
+
+  initCalendarState();
+  loadAssignments();
+})();
+
 
 </script>
 </body>
 </html>
+
