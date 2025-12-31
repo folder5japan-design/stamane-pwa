@@ -589,6 +589,10 @@ function initCalendarState(){
 
 function loadAssignments(){
   if(!currentStudent) return;
+
+  const list = document.getElementById('assignmentList');
+  list.innerHTML = '<div class="meta">読み込み中です…</div>';
+
   const url = baseExecUrl()
     + '?api=assignments&studentId='
     + encodeURIComponent(currentStudent.studentId);
@@ -597,19 +601,31 @@ function loadAssignments(){
     .then(r => r.json())
     .then(data => {
       if(!data.ok){
-        document.getElementById('assignmentList').innerHTML =
+        list.innerHTML =
           '<div class="meta">'+(data.error || '読み込みエラーです。')+'</div>';
         return;
       }
+
+      // ① 宿題データを保持
       allAssignments = data.assignments || [];
+
+      // ② カレンダーは「色と2文字表示」だけ描画
       renderCalendar();
-      // 初期はカレンダーモードで全件表示説明
+
+      // ③ 一覧は【必ず全件表示】する（←ここが重要）
+      viewMode = 'list';
+      setTabActive('list');
       renderAssignmentListForDate(null);
+
+      // ④ 日付説明文は初期化
+      const info = document.getElementById('selectedDateInfo');
+      if(info){
+        info.textContent = 'すべての宿題一覧です。';
+      }
     })
     .catch(e => {
       console.error(e);
-      document.getElementById('assignmentList').innerHTML =
-        '<div class="meta">読み込みエラーです。</div>';
+      list.innerHTML = '<div class="meta">読み込みエラーです。</div>';
     });
 }
 
@@ -887,6 +903,7 @@ function refreshAssignments(){
 </script>
 </body>
 </html>
+
 
 
 
