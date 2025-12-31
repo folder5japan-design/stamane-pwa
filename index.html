@@ -305,6 +305,43 @@ button{
     white-space:nowrap;
   }
 }
+ /* ===============================
+   📱 カレンダー内：2文字表示を横に確保
+   =============================== */
+
+@media (max-width: 768px) {
+
+  /* 宿題1件を横並びにする */
+  .cal-hw{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+  }
+
+  /* 2文字タイトルを安定表示 */
+  .cal-hw-title{
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+/* ===============================
+   📅 カレンダー：日付セル全体の色
+   =============================== */
+
+.cal-overdue{
+  background:rgba(239,68,68,0.18);   /* 赤 */
+}
+
+.cal-has{
+  background:rgba(245,158,11,0.18);  /* 黄 */
+}
+
+.cal-submitted{
+  background:rgba(59,130,246,0.18);  /* 青 */
+}
 
 </style>
 </head>
@@ -653,6 +690,7 @@ function renderCalendar(){
         const t = String(a.title || '');
         titleDiv.textContent = t.slice(0, 2);
 
+
         const metaDiv = document.createElement('div');
         metaDiv.className = 'cal-hw-meta';
 
@@ -669,24 +707,9 @@ function renderCalendar(){
         }
 
         const stSpan = document.createElement('span');
-        stSpan.className = 'cal-hw-dot cal-hw-dot-' + statusClass;
-
-
-        const btn = document.createElement('button');
-        btn.className = 'cal-hw-open btn-primary';
-        btn.type = 'button';
-        btn.textContent = '開く';
-        btn.addEventListener('click', ev=>{
-          ev.stopPropagation();
-          if(!a.openUrl){
-            alert('URLが設定されていません（METHOD_BASE_URLS を確認してください）。');
-            return;
-          }
-          window.open(a.openUrl, '_blank');
-        });
+        stSpan.className = 'cal-hw-dot cal-hw-dot-' + statusClass
 
         metaDiv.appendChild(stSpan);
-        metaDiv.appendChild(btn);
         hw.appendChild(titleDiv);
         hw.appendChild(metaDiv);
         listDiv.appendChild(hw);
@@ -882,5 +905,6 @@ function refreshAssignments(){
 </script>
 </body>
 </html>
+
 
 
