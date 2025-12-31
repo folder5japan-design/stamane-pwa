@@ -697,48 +697,44 @@ function renderCalendar(){
 
       const listDiv = document.createElement('div');
       listDiv.className = 'cal-hw-list';
+    items.forEach(a=>{
+  const hw = document.createElement('div');
+  hw.className = 'cal-hw';
 
-      items.forEach(a=>{
-        const hw = document.createElement('div');
-        hw.className = 'cal-hw';
+  const titleDiv = document.createElement('button');
+  titleDiv.className = 'cal-hw-title btn-primary';
 
-        const titleDiv = document.createElement('button');
-        titleDiv.className = 'cal-hw-title btn-primary';
-        titleDiv.textContent = t.slice(0,2);
-        titleDiv.type = 'button';
-        titleDiv.onclick = (e)=>{
-          e.stopPropagation();
-          if(!a.openUrl){
-            alert('URLが設定されていません');
-            return;
-          }
-          window.open(a.openUrl,'_blank');
-        };
+  const titleText = String(a.title || '');
+  titleDiv.textContent = titleText.slice(0,2);
 
+  titleDiv.type = 'button';
+  titleDiv.onclick = (e)=>{
+    e.stopPropagation();
+    if(!a.openUrl){
+      alert('URLが設定されていません');
+      return;
+    }
+    window.open(a.openUrl,'_blank');
+  };
 
-        const metaDiv = document.createElement('div');
-        metaDiv.className = 'cal-hw-meta';
+  const metaDiv = document.createElement('div');
+  metaDiv.className = 'cal-hw-meta';
 
-        let statusLabel = '未提出';
-        let statusClass = 'pending';
-        const s = a.status || '';
-        if (s === '提出' || s === '提出済') {
-          statusLabel = '提出済';
-          statusClass = 'submitted';
-        }
-        if (a.overdue && (!s || s === '未提出')) {
-          statusLabel = '期限切れ';
-          statusClass = 'overdue';
-        }
+  let statusClass = 'pending';
+  const s = a.status || '';
+  if (s === '提出' || s === '提出済') statusClass = 'submitted';
+  if (a.overdue && (!s || s === '未提出')) statusClass = 'overdue';
 
-        const stSpan = document.createElement('span');
-        stSpan.className = 'cal-hw-dot cal-hw-dot-' + statusClass
+  const stSpan = document.createElement('span');
+  stSpan.className = 'cal-hw-dot cal-hw-dot-' + statusClass;
 
-        metaDiv.appendChild(stSpan);
-        hw.appendChild(titleDiv);
-        hw.appendChild(metaDiv);
-        listDiv.appendChild(hw);
-      });
+  metaDiv.appendChild(stSpan);
+  hw.appendChild(titleDiv);
+  hw.appendChild(metaDiv);
+  listDiv.appendChild(hw);
+});
+
+     
 
       cell.appendChild(listDiv);
     }
@@ -931,6 +927,7 @@ function refreshAssignments(){
 </script>
 </body>
 </html>
+
 
 
 
