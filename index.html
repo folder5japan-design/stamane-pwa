@@ -657,8 +657,11 @@ function renderCalendar(){
   grid.innerHTML = '';
 
   const title = document.getElementById('calMonthTitle');
-  title.textContent = `${currentYear}年 ${currentMonth+1}月`;
+  title.textContent = `${currentYear}年 ${currentMonth + 1}月`;
 
+  /* =========================
+     日付 → 宿題配列 のMap
+     ========================= */
   const mapByDate = {};
   (allAssignments || []).forEach(a => {
     if(!a.due) return;
@@ -666,122 +669,104 @@ function renderCalendar(){
     mapByDate[a.due].push(a);
   });
 
-  const first = new Date(currentYear, currentMonth, 1);
-  const startDay = first.getDay();
+  const firstDay = new Date(currentYear, currentMonth, 1);
+  const startWeekday = firstDay.getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  for(let i=0;i<startDay;i++){
-    const cell = document.createElement('div');
-    cell.className = 'cal-cell cal-cell-empty';
-    grid.appendChild(cell);
+  /* =========================
+     月初の空白セル
+     ========================= */
+  for(let i = 0; i < startWeekday; i++){
+    const empty = document.createElement('div');
+    empty.className = 'cal-cell cal-cell-empty';
+    grid.appendChild(empty);
   }
 
-  const today = new Date();
-  const todayStr = formatDateStr(today);
+  const todayStr = formatDateStr(new Date());
 
-  for(let d=1; d<=daysInMonth; d++){
-    const cell = document.createElement('div');
-    cell.className = 'cal-cell cal-cell-hover';
-    const dateObj = new Date(currentYear, currentMonth, d);
+  /* =========================
+     日付セル本体
+     ========================= */
+  for(let day = 1; day <= daysInMonth; day++){
+    const dateObj = new Date(currentYear, currentMonth, day);
     const dateStr = formatDateStr(dateObj);
 
-    const dayDiv = document.createElement('div');
-    dayDiv.className = 'cal-cell-day';
-    dayDiv.textContent = d;
-    cell.appendChild(dayDiv);
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell';
+
+    /* 日付数字 */
+    const dayLabel = document.createElement('div');
+    dayLabel.className = 'cal-cell-day';
+    dayLabel.textContent = day;
+    cell.appendChild(dayLabel);
 
     const items = mapByDate[dateStr] || [];
-    let hasPending = false;
-    let hasSubmitted = false;
-    let hasOverdue = false;
 
-    items.forEach(a=>{
-      const s = a.status || '';
-      if(a.overdue && (!s || s === '未提出')) hasOverdue = true;
-      if(!s || s === '未提出') hasPending = true;
-      if(s === '提出' || s === '提出済') hasSubmitted = true;
+    /* =========================
+       提出状況による色判定
+       ========================= */
+    let total = items.length;
+    let submitted = 0;
+
+    items.forEach(a => {
+      if(a.status === '提出' || a.status === '提出済'){
+        submitted++;
+      }
+    });
+
+    if(total > 0){
+      if(submitted === 0){
+        cell.classList.add('cal-overdue');     // 全未提出（赤）
+      }else if(submitted < total){
+        cell.classList.add('cal-has');         // 一部提出（黄）
+      }else{
+        cell.classList.add('cal-submitted');   // 全提出（青）
+      }
+    }
+
+    /* =========================
+       カレンダー内：2文字表示
+       ========================= */
+    const listDiv = document.createElement('div');
+    listDiv.className = 'cal-hw-list';
+
+    items.forEach(a => {
+      const hw = document.createElement('div');
+      hw.className = 'cal-hw';
+
+      const titleText = String(a.title || '未');
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'cal-hw-title';
+      titleSpan.textContent = titleText.slice(0, 2);
+
+      /* クリック → 一覧の該当日付へ */
+      titleSpan.addEventListener('click', (e) => {
+        e.stopPropagation();
+        scrollToAssignmentDate(a.due);
+      });
+
+      hw.appendChild(titleSpan);
+      listDiv.appendChild(hw);
     });
 
     if(items.length > 0){
-      if(hasOverdue){
-        cell.classList.add('cal-overdue');
-      }else if(hasPending){
-        cell.classList.add('cal-has');
-      }else if(hasSubmitted){
-        cell.classList.add('cal-submitted');
-      }
-
-      const listDiv = document.createElement('div');
-      listDiv.className = 'cal-hw-list';
- items.forEach(a=>{
-  const hw = document.createElement('div');
-  hw.className = 'cal-hw';
-
-  const titleDiv = document.createElement('button');
-  titleDiv.className = 'cal-hw-title btn-primary';
-
-  const titleText = String(a.title || '');
-  titleDiv.textContent = titleText.slice(0,2);
-
-  titleDiv.type = 'button';
-  titleDiv.onclick = (e)=>{
-    e.stopPropagation();
-    if(!a.openUrl){
-      alert('URLが設定されていません');
-      return;
-    }
-    window.open(a.openUrl,'_blank');
-  };
-
-  const metaDiv = document.createElement('div');
-  metaDiv.className = 'cal-hw-meta';
-
-  let statusClass = 'pending';
-  const s = a.status || '';
-  if (s === '提出' || s === '提出済') statusClass = 'submitted';
-  if (a.overdue && (!s || s === '未提出')) statusClass = 'overdue';
-
-  const stSpan = document.createElement('span');
-  stSpan.className = 'cal-hw-dot cal-hw-dot-' + statusClass;
-
-  metaDiv.appendChild(stSpan);
-  hw.appendChild(titleDiv);
-  hw.appendChild(metaDiv);
-  listDiv.appendChild(hw);
-});
-
-     
-
       cell.appendChild(listDiv);
     }
 
+    /* 今日の強調 */
     if(dateStr === todayStr){
-      cell.style.borderColor = '#22c55e';
-      cell.style.fontWeight = '700';
+      cell.style.outline = '2px solid #22c55e';
     }
 
-    if(selectedDateStr === dateStr){
-      cell.classList.add('cal-selected');
-    }
-
-    cell.addEventListener('click', ()=>{
-      selectedDateStr = dateStr;
-      Array.from(document.querySelectorAll('.cal-cell')).forEach(c=>{
-        c.classList.remove('cal-selected');
-      });
-      cell.classList.add('cal-selected');
-      // カレンダーモードでその日の一覧を下に表示
-      viewMode = 'calendar';
-      setTabActive('calendar');
-      document.getElementById('calendarWrapper').classList.remove('hidden');
-      document.getElementById('selectedDateInfo').classList.remove('hidden');
+    /* 日付セルタップ → 一覧スクロール */
+    cell.addEventListener('click', () => {
       scrollToAssignmentDate(dateStr);
-
     });
 
     grid.appendChild(cell);
   }
 }
+
 
 function renderAssignmentListForDate(dateStr){
   const list = document.getElementById('assignmentList');
@@ -908,6 +893,7 @@ function renderAllAssignments(){
 </script>
 </body>
 </html>
+
 
 
 
