@@ -627,91 +627,83 @@ function renderCalendar(){
    ========================================================== */
 function renderAssignmentListAll(){
   const list = document.getElementById('assignmentList');
+  if(!list) return;
   list.innerHTML = '';
 
-  // dueでグルーピング（dueなしも入れる）
-  const groups = {};
-  (allAssignments || []).forEach(a => {
-    const due = String(a.due || '').trim() || '未設定';
-    if(!groups[due]) groups[due] = [];
-    groups[due].push(a);
-  });
+  const today = new Date();
+  today.setHours(0,0,0,0); // 日付比較を安定させる
 
-  const keys = Object.keys(groups).sort((a,b) => {
-    if(a === '未設定') return 1;
-    if(b === '未設定') return -1;
-    return a.localeCompare(b);
-  });
+  // allAssignments が配列じゃない事故を防ぐ
+  const items = Array.isArray(allAssignments) ? allAssignments : [];
 
-  if(keys.length === 0){
+  // 何もなければメッセージ
+  if(items.length === 0){
     list.innerHTML = '<div class="meta">宿題がありません。</div>';
     return;
   }
 
-  keys.forEach(due => {
-    const section = document.createElement('div');
-    section.className = 'date-section';
-    if(due !== '未設定'){
-      section.id = 'date-' + due; // ✅ 日付スクロール先
+  // 宿題を1件ずつ描画
+  items.forEach(a => {
+
+    // ---- 1) 提出済み判定 ----
+    const status = String(a.status || '').trim();
+    const isSubmitted = (status === '提出' || status === '提出済');
+
+    // ---- 2) due（日付）を Date に変換 ----
+    const dueStr = String(a.due || '').trim(); // "2025-12-22" みたいな形式想定
+    const dueDate = new Date(dueStr);
+    const dueValid = !isNaN(dueDate.getTime()); // 日付として正しいか
+
+    // ---- 3) 期限から何日経過したか（提出済み表示10日ルール）----
+    let diffDays = 9999;
+    if(dueValid){
+      dueDate.setHours(0,0,0,0);
+      diffDays = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
     }
 
-    const dt = document.createElement('div');
-    dt.className = 'date-title';
-    dt.textContent = (due === '未設定') ? '期限未設定' : due;
-    section.appendChild(dt);
+    // ✅ 提出済み かつ 10日より前（11日以上前）なら表示しない
+    // diffDaysが負（未来）なら 0扱いではなく、そのまま表示でOK（未来の提出済みは基本ないけど）
+    if(isSubmitted && diffDays > 10){
+      return; // ← これが「10日より前は出さない」
+    }
 
-    groups[due].forEach(a => {
-      const div = document.createElement('div');
-      div.className = 'item';
+    // ---- 4) ここから表示（カード） ----
+    const div = document.createElement('div');
+    div.className = 'item';
 
-      const title = document.createElement('div');
-      title.className = 'item-title';
-      title.textContent = a.title || '(タイトル未設定)';
-      div.appendChild(title);
+    // タイトル
+    const title = document.createElement('div');
+    title.className = 'item-title';
+    title.textContent = a.title || '(タイトル未設定)';
+    div.appendChild(title);
 
-      // ステータス表示（小さく）
-      const meta = document.createElement('div');
-      meta.className = 'meta';
+    // メタ（期限など）
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    if(dueStr){
+      meta.textContent = '期限: ' + dueStr + (isSubmitted ? '（提出済）' : '（未提出）');
+    }else{
+      meta.textContent = isSubmitted ? '提出済' : '未提出';
+    }
+    div.appendChild(meta);
 
-      const sClass = getStatusClass(a);
-      const badge = document.createElement('span');
-      badge.className = 'badge ' + (sClass === 'submitted' ? 'badge-sub' : (sClass === 'overdue' ? 'badge-over' : 'badge-not'));
-      badge.textContent = (sClass === 'submitted') ? '提出済' : (sClass === 'overdue' ? '期限切れ' : '未提出');
-      meta.appendChild(badge);
-
-      if(a.points != null){
-        const sp = document.createElement('span');
-        sp.textContent = `ポイント: ${a.points}`;
-        meta.appendChild(sp);
-      }
-      div.appendChild(meta);
-
-      // ✅ 一覧のボタン：宿題を開く（ここはそのままでOK）
+    // ✅ 未提出だけ「宿題を開く」ボタンを表示
+    if(!isSubmitted){
       const btn = document.createElement('button');
       btn.className = 'btn-primary';
-      btn.textContent = '宿題を開く';
       btn.type = 'button';
+      btn.textContent = '宿題を開く';
       btn.onclick = () => {
-        if(a.openUrl){
-          window.open(a.openUrl,'_blank');
-        }else{
+        if(!a.openUrl){
           alert('URLが設定されていません');
+          return;
         }
+        window.open(a.openUrl, '_blank');
       };
       div.appendChild(btn);
+    }
 
-      // LINEメモ等
-      if(a.lineNote){
-        const ln = document.createElement('div');
-        ln.className = 'meta';
-        ln.textContent = a.lineNote;
-        div.appendChild(ln);
-      }
-
-      section.appendChild(div);
-    });
-
-    list.appendChild(section);
+    list.appendChild(div);
   });
 }
 
@@ -844,6 +836,7 @@ if ('serviceWorker' in navigator) {
 
 </body>
 </html>
+
 
 
 
