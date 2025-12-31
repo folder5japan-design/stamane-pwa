@@ -586,7 +586,6 @@ function initCalendarState(){
   currentMonth = today.getMonth();
   selectedDateStr = null;
 }
-
 function loadAssignments(){
   if(!currentStudent) return;
 
@@ -606,18 +605,18 @@ function loadAssignments(){
         return;
       }
 
-      // ① 宿題データを保持
+      // ① 宿題データ保持
       allAssignments = data.assignments || [];
 
-      // ② カレンダーは「色と2文字表示」だけ描画
+      // ② カレンダー描画
       renderCalendar();
 
-      // ③ 一覧は【必ず全件表示】する（←ここが重要）
+      // ③ 一覧は必ず全件表示
       viewMode = 'list';
       setTabActive('list');
-      renderAssignmentListForDate(null); 
+      renderAssignmentListForDate(null);
 
-      // ④ 日付説明文は初期化
+      // ④ 説明文
       const info = document.getElementById('selectedDateInfo');
       if(info){
         info.textContent = 'すべての宿題一覧です。';
@@ -628,6 +627,7 @@ function loadAssignments(){
       list.innerHTML = '<div class="meta">読み込みエラーです。</div>';
     });
 }
+
 
 function changeMonth(delta){
   currentMonth += delta;
@@ -893,6 +893,7 @@ function renderAllAssignments(){
 </script>
 </body>
 </html>
+
 
 
 
