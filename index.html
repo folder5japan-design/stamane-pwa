@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>スタマネ</title>
 <style>
+ 
 *{box-sizing:border-box}
 body{
   margin:0;
@@ -263,6 +264,46 @@ button{
     overflow-x:auto;
   }
 
+}
+/* =====================================================
+   📅 カレンダー内：提出状態を「色だけ」で表現
+   ===================================================== */
+
+.cal-hw-dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  margin-left:4px;
+}
+
+.cal-hw-dot-pending{ background:#ef4444; }    /* 未提出：赤 */
+.cal-hw-dot-overdue{ background:#f59e0b; }    /* 一部未提出：黄 */
+.cal-hw-dot-submitted{ background:#3b82f6; }  /* 提出済：青 */
+
+
+/* =====================================================
+   📱 スマホ：カレンダーは縦に伸びてもOK
+   ===================================================== */
+@media (max-width: 768px) {
+
+  .cal-cell{
+    min-height:auto;
+    padding:6px 4px;
+  }
+
+  .cal-hw{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    padding:2px 0;
+  }
+
+  .cal-hw-title{
+    font-size:12px;
+    font-weight:600;
+    white-space:nowrap;
+  }
 }
 
 </style>
@@ -609,8 +650,8 @@ function renderCalendar(){
 
         const titleDiv = document.createElement('div');
         titleDiv.className = 'cal-hw-title';
-        const t = String(a.title || '(タイトル未設定)');
-        titleDiv.textContent = t.length > 12 ? t.slice(0,12)+'…' : t;
+        const t = String(a.title || '');
+        titleDiv.textContent = t.slice(0, 2);
 
         const metaDiv = document.createElement('div');
         metaDiv.className = 'cal-hw-meta';
@@ -628,8 +669,8 @@ function renderCalendar(){
         }
 
         const stSpan = document.createElement('span');
-        stSpan.className = 'cal-hw-status cal-hw-status-' + statusClass;
-        stSpan.textContent = statusLabel;
+        stSpan.className = 'cal-hw-dot cal-hw-dot-' + statusClass;
+
 
         const btn = document.createElement('button');
         btn.className = 'cal-hw-open btn-primary';
@@ -841,4 +882,5 @@ function refreshAssignments(){
 </script>
 </body>
 </html>
+
 
