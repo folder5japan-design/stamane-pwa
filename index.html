@@ -697,7 +697,7 @@ function renderCalendar(){
 
       const listDiv = document.createElement('div');
       listDiv.className = 'cal-hw-list';
-    items.forEach(a=>{
+ items.forEach(a=>{
   const hw = document.createElement('div');
   hw.className = 'cal-hw';
 
@@ -795,72 +795,32 @@ function renderAssignmentListForDate(dateStr){
     list.innerHTML = '<div class="meta">該当する宿題はありません。</div>';
     return;
   }
+items.forEach(a=>{
+  const hw = document.createElement('div');
+  hw.className = 'cal-hw';
 
-  items.forEach(a => {
-    const div = document.createElement('div');
-    div.className = 'item';
+  const t = String(a.title || '(タイトル未設定)');
+  const two = t.slice(0, 2);
 
-    const title = document.createElement('div');
-    title.className = 'item-title';
-    title.textContent = a.title || '(タイトル未設定)';
-    div.appendChild(title);
-
-    const meta = document.createElement('div');
-    meta.className = 'meta';
-
-    const s = a.status || '';
-    const bStatus = document.createElement('span');
-    if(s === '提出' || s === '提出済'){
-      bStatus.className = 'badge badge-sub';
-      bStatus.textContent = '提出済';
-    }else{
-      bStatus.className = 'badge badge-not';
-      bStatus.textContent = '未提出';
+  // 2文字を「ボタン化」して宿題を開く
+  const titleBtn = document.createElement('button');
+  titleBtn.type = 'button';
+  titleBtn.className = 'cal-hw-title';
+  titleBtn.textContent = two;
+  titleBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if(!a.openUrl){
+      alert('URLが設定されていません');
+      return;
     }
-    meta.appendChild(bStatus);
-
-    if(a.overdue && (s === '未提出' || !s)){
-      const bo = document.createElement('span');
-      bo.className = 'badge badge-over';
-      bo.textContent = '期限切れ';
-      meta.appendChild(bo);
-    }
-
-    if(a.due){
-      const sd = document.createElement('span');
-      sd.textContent = ' 期限: ' + a.due;
-      meta.appendChild(sd);
-    }
-
-    const sp = document.createElement('span');
-    sp.textContent = ' ／ ポイント: ' + (a.points || 0);
-    meta.appendChild(sp);
-
-    div.appendChild(meta);
-
-    const btn = document.createElement('button');
-    btn.className = 'btn-primary';
-    btn.type = 'button';
-    btn.textContent = '宿題を開く';
-    btn.onclick = () => {
-      if(!a.openUrl){
-        alert('URLが設定されていません（METHOD_BASE_URLS を設定してください）。');
-        return;
-      }
-      window.open(a.openUrl, '_blank');
-    };
-    div.appendChild(btn);
-
-    if(a.lineNote){
-      const ln = document.createElement('div');
-      ln.className = 'meta';
-      ln.textContent = a.lineNote;
-      div.appendChild(ln);
-    }
-
-    list.appendChild(div);
+    window.open(a.openUrl,'_blank');
   });
-}
+
+  hw.appendChild(titleBtn);
+  listDiv.appendChild(hw);
+});
+
+
 
 /********** タブ切り替え **********/
 function setTabActive(mode){
@@ -890,7 +850,7 @@ document.getElementById('tabList').addEventListener('click', ()=>{
   document.getElementById('selectedDateInfo').classList.add('hidden');
   renderAssignmentListForDate(null);
 });
-
+}
 /********** パスワード表示切替 **********/
 document.getElementById('showPwd').addEventListener('change', (e)=>{
   const pwd = document.getElementById('pwd');
@@ -927,6 +887,7 @@ function refreshAssignments(){
 </script>
 </body>
 </html>
+
 
 
 
