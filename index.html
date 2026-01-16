@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>スタマネ</title>
-<link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#020617">
 
-  <!-- iOS用（重要） -->
-  <link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#020617">
+<link rel="apple-touch-icon" href="./icon-192.png">
+
 <style>
 *{box-sizing:border-box}
 body{
@@ -17,11 +17,7 @@ body{
   background:#020617;
   color:#e5e7eb;
 }
-.app{
-  max-width:900px;
-  margin:0 auto;
-  padding:16px;
-}
+.app{max-width:900px;margin:0 auto;padding:16px;}
 .card{
   background:#020617;
   border-radius:16px;
@@ -42,12 +38,9 @@ button{
   border:none;
   cursor:pointer;
 }
-
-/* 主要ボタン */
 .btn-primary{background:#22c55e;color:#022c22;}
 .btn-secondary{background:#111827;color:#e5e7eb;border:1px solid #374151;}
-
-.meta{font-size:12px;color:#9ca3af;margin-top:4px;}
+.meta{font-size:12px;color:#9ca3af;margin-top:6px;}
 .hidden{display:none;}
 
 .list{margin-top:16px;}
@@ -55,18 +48,20 @@ button{
   border-top:1px solid #1f2937;
   padding:12px 0;
 }
-.item-title{font-size:15px;font-weight:600;}
+.item-title{font-size:15px;font-weight:700;}
 .badge{
-  display:inline-block;font-size:11px;padding:2px 8px;
-  border-radius:999px;margin-right:6px;border:1px solid rgba(255,255,255,.08);
+  display:inline-block;
+  font-size:11px;
+  padding:2px 8px;
+  border-radius:999px;
+  margin-right:6px;
+  border:1px solid rgba(255,255,255,.08);
 }
-.badge-not{background:#2a0b0b;color:#fecaca;}     /* 未提出（一覧用） */
-.badge-sub{background:#0b1a35;color:#bfdbfe;}     /* 提出済（一覧用） */
-.badge-over{background:#2a1a00;color:#fde68a;}    /* 期限切れ（一覧用） */
+.badge-not{background:#2a0b0b;color:#fecaca;}
+.badge-sub{background:#0b1a35;color:#bfdbfe;}
+.badge-over{background:#2a1a00;color:#fde68a;}
 
-/* =========================
-   タブ（残す）
-   ========================= */
+/* タブ */
 .view-tabs{
   display:inline-flex;
   border-radius:999px;
@@ -90,9 +85,7 @@ button{
   color:#022c22;
 }
 
-/* =========================
-   カレンダー
-   ========================= */
+/* カレンダー */
 .calendar-wrapper{
   margin-top:8px;
   border-radius:16px;
@@ -106,10 +99,10 @@ button{
   margin-bottom:8px;
 }
 .cal-header-title{
-  font-weight:700;
+  font-weight:800;
   flex:1;
   text-align:center;
-  white-space:nowrap;          /* ✅ 1行固定 */
+  white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
@@ -124,6 +117,7 @@ button{
   margin-top:0;
   white-space:nowrap;
 }
+
 .cal-weekdays,.cal-grid{
   display:grid;
   grid-template-columns:repeat(7,1fr);
@@ -154,24 +148,17 @@ button{
 }
 .cal-cell-day{
   font-size:12px;
-  font-weight:800;
+  font-weight:900;
   margin-bottom:4px;
 }
 
-/* ✅ 日付セル全体の色：全未提出=赤 / 一部=黄 / 全提出=青 */
-.cal-all-pending{
-  background:rgba(239,68,68,0.16);   /* 日付セル赤（薄め） */
-}
-.cal-partial{
-  background:rgba(245,158,11,0.16);  /* 日付セル黄（薄め） */
-}
-.cal-all-submitted{
-  background:rgba(59,130,246,0.16);  /* 日付セル青（薄め） */
-}
+/* 日付セル全体色 */
+.cal-all-pending{background:rgba(239,68,68,0.16);}
+.cal-partial{background:rgba(245,158,11,0.16);}
+.cal-all-submitted{background:rgba(59,130,246,0.16);}
 
-/* カレンダー内2文字バッジ（小さく） */
+/* バッジ */
 .cal-hw-list{display:flex;flex-wrap:wrap;gap:4px;}
-.cal-hw{display:inline-flex;align-items:center;gap:4px;margin:0;}
 .cal-hw-title{
   margin:0;
   padding:3px 8px;
@@ -180,52 +167,40 @@ button{
   background:#0b1220;
   color:#e5e7eb;
   font-size:11px;
-  font-weight:800;
+  font-weight:900;
   line-height:1;
   cursor:pointer;
 }
-
-/* ✅ 宿題バッジ色：未提出=赤 / 提出=青 / 期限切れ=橙 */
 .cal-hw-title.pending{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.35);color:#fecaca;}
 .cal-hw-title.submitted{background:rgba(59,130,246,.18);border-color:rgba(59,130,246,.35);color:#bfdbfe;}
 .cal-hw-title.overdue{background:rgba(245,158,11,.18);border-color:rgba(245,158,11,.35);color:#fde68a;}
 
-/* 今日の枠 */
 .cal-today{
   outline:2px solid rgba(34,197,94,.7);
   outline-offset:1px;
 }
 
-/* =========================
-   一覧：日付見出し
-   ========================= */
+/* 一覧：日付セクション */
 .date-section{
   margin-top:14px;
   padding-top:10px;
   border-top:1px solid #1f2937;
 }
 .date-title{
-  font-weight:800;
+  font-weight:900;
   font-size:13px;
   color:#e5e7eb;
   margin-bottom:8px;
 }
 .small-note{font-size:12px;color:#9ca3af;margin-top:6px}
 
-/* =========================
-   📱 スマホ調整
-   ========================= */
 @media (max-width: 768px) {
   body{font-size:16px;}
   .app{padding:10px;}
   .card{padding:14px;border-radius:12px;}
   h1{font-size:18px;}
-
   input{font-size:16px;padding:10px 12px;}
-
-  /* ✅ “全ボタンが100%” をやめる（これが崩れの原因になりがち） */
   .btn-primary,.btn-secondary{width:100%;font-size:15px;padding:10px 14px;}
-
   .calendar-wrapper{padding:10px;}
   .cal-header-title{font-size:13px;}
   .cal-nav-btn{padding:6px 8px;font-size:12px;}
@@ -239,7 +214,7 @@ button{
 <body>
 <div class="app">
 
-  <!-- ログインカード -->
+  <!-- ログイン -->
   <div class="card" id="loginCard">
     <h1>スタマネ</h1>
     <label>生徒ID</label>
@@ -253,23 +228,21 @@ button{
       </label>
     </div>
     <button class="btn-primary" onclick="login()">ログイン</button>
-    <div id="loginStatus" class="meta" style="margin-top:6px;"></div>
-    <div id="loginError" class="meta" style="color:#fca5a5;margin-top:6px;"></div>
+    <div id="loginStatus" class="meta"></div>
+    <div id="loginError" class="meta" style="color:#fca5a5;"></div>
   </div>
 
-  <!-- ポータルカード -->
+  <!-- ポータル -->
   <div class="card hidden" id="portalCard">
     <div class="meta" id="studentInfo"></div>
 
     <button class="btn-secondary" onclick="refreshAssignments()">🔄 更新</button>
 
-    <!-- タブ：Calendarは「カレンダー＋一覧」、Listは「一覧だけ」 -->
     <div class="view-tabs">
       <button id="tabCalendar" class="tab-btn tab-btn-active" type="button">カレンダー</button>
       <button id="tabList" class="tab-btn" type="button">一覧のみ</button>
     </div>
 
-    <!-- カレンダー -->
     <div id="calendarWrapper" class="calendar-wrapper">
       <div class="cal-header">
         <button class="cal-nav-btn" onclick="changeMonth(-1)">＜ 前</button>
@@ -285,7 +258,6 @@ button{
 
     <div class="meta" id="selectedDateInfo" style="margin-top:10px;"></div>
 
-    <!-- 宿題一覧 -->
     <div class="list" id="assignmentList"></div>
 
     <button class="btn-secondary" onclick="logout()">ログアウト</button>
@@ -294,42 +266,23 @@ button{
 </div>
 
 <script>
-function daysBetween(dateStr){
-  const today = new Date();
-  const d = new Date(dateStr);
-  const diff = today - d;
-  return diff / (1000 * 60 * 60 * 24);
-}
-
 /* ==========================================================
-   0) 設定
+   設定
    ========================================================== */
 function baseExecUrl(){
   return 'https://script.google.com/macros/s/AKfycbw9wrLj_SgmFusn_8YwMJ_I9b9_36JpMdbGK4fPJpXOXVD-BI844jqXgZBGkbdFjFD2/exec';
 }
 
 /* ==========================================================
-   1) セッション保存（PWAで再ログイン不要）
+   セッション（PWAで再ログイン不要）
    ========================================================== */
 const SESSION_KEY = 'stamane_session_v1';
-
-function saveSession(student){
-  try { localStorage.setItem(SESSION_KEY, JSON.stringify(student)); } catch(e){}
-}
-function loadSession(){
-  try {
-    const s = localStorage.getItem(SESSION_KEY);
-    return s ? JSON.parse(s) : null;
-  } catch(e){
-    return null;
-  }
-}
-function clearSession(){
-  try { localStorage.removeItem(SESSION_KEY); } catch(e){}
-}
+function saveSession(student){ try{ localStorage.setItem(SESSION_KEY, JSON.stringify(student)); }catch(e){} }
+function loadSession(){ try{ const s = localStorage.getItem(SESSION_KEY); return s ? JSON.parse(s) : null; }catch(e){ return null; } }
+function clearSession(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} }
 
 /* ==========================================================
-   2) 状態
+   状態
    ========================================================== */
 let currentStudent = null;
 let allAssignments = [];
@@ -337,7 +290,7 @@ let currentYear, currentMonth;
 let viewMode = 'calendar'; // 'calendar' or 'listOnly'
 
 /* ==========================================================
-   3) 便利関数
+   便利
    ========================================================== */
 function formatDateStr(dt){
   const y = dt.getFullYear();
@@ -345,25 +298,33 @@ function formatDateStr(dt){
   const d = ('0'+dt.getDate()).slice(-2);
   return `${y}-${m}-${d}`;
 }
-
-function getStatusClass(a){
+function escapeHtml(str){
+  return String(str || '').replace(/[&<>"']/g, (m) => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+function isSubmitted_(a){
   const s = String(a.status || '').trim();
-  const overdue = !!a.overdue;
-  if (overdue && (s === '' || s === '未提出')) return 'overdue';
+  return (s === '提出' || s === '提出済');
+}
+function statusClass_(a){
+  const s = String(a.status || '').trim();
+  if (a.overdue && (!s || s === '未提出')) return 'overdue';
   if (s === '提出' || s === '提出済') return 'submitted';
   return 'pending';
 }
-
-/* ✅ “日付タップで一覧の該当日付へ” */
-function scrollToAssignmentDate(dateStr){
+function scrollToDateSection(dateStr){
   const el = document.getElementById('date-' + dateStr);
-  if(el){
+  if (el){
     el.scrollIntoView({behavior:'smooth', block:'start'});
+  } else {
+    // 念のため一覧先頭へ（該当日がない場合）
+    document.getElementById('assignmentList').scrollIntoView({behavior:'smooth', block:'start'});
   }
 }
 
 /* ==========================================================
-   4) ログイン
+   ログイン
    ========================================================== */
 function login(){
   const sid = document.getElementById('sid').value.trim();
@@ -438,28 +399,22 @@ function logout(){
 }
 
 /* ==========================================================
-   5) カレンダー初期化
+   カレンダー状態
    ========================================================== */
 function initCalendarState(){
   const today = new Date();
   currentYear = today.getFullYear();
   currentMonth = today.getMonth();
 }
-
 function changeMonth(delta){
   currentMonth += delta;
-  if(currentMonth < 0){
-    currentMonth = 11;
-    currentYear--;
-  }else if(currentMonth > 11){
-    currentMonth = 0;
-    currentYear++;
-  }
+  if(currentMonth < 0){ currentMonth = 11; currentYear--; }
+  else if(currentMonth > 11){ currentMonth = 0; currentYear++; }
   renderCalendar();
 }
 
 /* ==========================================================
-   6) 宿題読み込み（読み込みエラー対策を強化）
+   宿題読み込み（JSONじゃない事故も表示）
    ========================================================== */
 function loadAssignments(){
   if(!currentStudent) return;
@@ -474,16 +429,14 @@ function loadAssignments(){
   fetch(url)
     .then(async (r) => {
       const text = await r.text();
-      try {
-        return JSON.parse(text);
-      } catch(e){
-        // ✅ JSONじゃない（HTMLが返ってきた等）場合でも「原因表示」して止まらない
-        return { ok:false, error:'JSON解析に失敗しました（APIの返りがJSONではない）', raw:text.slice(0,200) };
-      }
+      try { return JSON.parse(text); }
+      catch(e){ return { ok:false, error:'JSON解析に失敗しました（APIの返りがJSONではない）', raw:text.slice(0,300) }; }
     })
     .then(data => {
       if(!data.ok){
-        const raw = data.raw ? `<div class="meta" style="margin-top:6px;white-space:pre-wrap;opacity:.8">${escapeHtml(data.raw)}</div>` : '';
+        const raw = data.raw
+          ? `<div class="meta" style="margin-top:8px;white-space:pre-wrap;opacity:.85">${escapeHtml(data.raw)}</div>`
+          : '';
         list.innerHTML = `<div class="meta">${escapeHtml(data.error || '読み込みエラーです。')}</div>${raw}`;
         return;
       }
@@ -491,11 +444,9 @@ function loadAssignments(){
       allAssignments = Array.isArray(data.assignments) ? data.assignments : [];
 
       renderCalendar();
-      renderAssignmentListSafe();
-      renderAssignmentListAll();  // ✅ 一覧は常に全件表示（消さない）
+      renderAssignmentListAll(); // ✅ 一覧はここ1本に統一
 
-      const info = document.getElementById('selectedDateInfo');
-      info.textContent = 'すべての宿題一覧です。';
+      document.getElementById('selectedDateInfo').textContent = 'すべての宿題一覧です。';
     })
     .catch(e => {
       console.error(e);
@@ -503,27 +454,18 @@ function loadAssignments(){
     });
 }
 
-function escapeHtml(str){
-  return String(str || '').replace(/[&<>"']/g, (m) => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[m]));
-}
-
 /* ==========================================================
-   7) カレンダー描画（完全差し替え）
-   - 日付セル色：全未提出=赤 / 一部=黄 / 全提出=青
-   - 宿題は2文字バッジ（小さく）
-   - 日付タップ：一覧の該当日付へスクロール（一覧は消さない）
-   - 2文字タップ：openUrlへ（※ここは要望通り）
+   カレンダー描画
+   - 日付クリック：一覧の該当日付へスクロール
+   - 2文字バッジクリック：openUrl
    ========================================================== */
 function renderCalendar(){
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
 
-  const title = document.getElementById('calMonthTitle');
-  title.textContent = `${currentYear}年 ${currentMonth + 1}月`;
+  document.getElementById('calMonthTitle').textContent =
+    `${currentYear}年 ${currentMonth + 1}月`;
 
-  // due -> list
   const mapByDate = {};
   (allAssignments || []).forEach(a => {
     const due = String(a.due || '').trim();
@@ -537,15 +479,13 @@ function renderCalendar(){
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const todayStr = formatDateStr(new Date());
 
-  // 空白
-  for(let i = 0; i < startWeekday; i++){
+  for(let i=0;i<startWeekday;i++){
     const empty = document.createElement('div');
     empty.className = 'cal-cell cal-cell-empty';
     grid.appendChild(empty);
   }
 
-  // 日付セル
-  for(let day = 1; day <= daysInMonth; day++){
+  for(let day=1; day<=daysInMonth; day++){
     const dateObj = new Date(currentYear, currentMonth, day);
     const dateStr = formatDateStr(dateObj);
 
@@ -559,62 +499,42 @@ function renderCalendar(){
 
     const items = mapByDate[dateStr] || [];
 
-    // ✅ 日付セル全体の色判定
-    if(items.length > 0){
+    if(items.length){
       const total = items.length;
-      const submitted = items.filter(a => {
-        const s = String(a.status || '').trim();
-        return (s === '提出' || s === '提出済');
-      }).length;
+      const submittedCount = items.filter(isSubmitted_).length;
 
-      if(submitted === 0){
-        cell.classList.add('cal-all-pending');
-      }else if(submitted < total){
-        cell.classList.add('cal-partial');
-      }else{
-        cell.classList.add('cal-all-submitted');
-      }
+      if(submittedCount === 0) cell.classList.add('cal-all-pending');
+      else if(submittedCount < total) cell.classList.add('cal-partial');
+      else cell.classList.add('cal-all-submitted');
 
-      // 2文字バッジ
       const listDiv = document.createElement('div');
       listDiv.className = 'cal-hw-list';
 
       items.forEach(a => {
-        const hw = document.createElement('div');
-        hw.className = 'cal-hw';
-
         const t = String(a.title || '未');
         const badge = document.createElement('button');
         badge.type = 'button';
-        badge.className = 'cal-hw-title ' + getStatusClass(a);
-        badge.textContent = t.slice(0, 2);
+        badge.className = 'cal-hw-title ' + statusClass_(a);
+        badge.textContent = t.slice(0,2);
 
-        // ✅ 2文字タップ：その宿題を開く（要望）
         badge.addEventListener('click', (e) => {
           e.stopPropagation();
-          if(a.openUrl){
-            window.open(a.openUrl, '_blank');
-          }else{
-            alert('URLが設定されていません');
-          }
+          if(a.openUrl) window.open(a.openUrl, '_blank');
+          else alert('URLが設定されていません');
         });
 
-        hw.appendChild(badge);
-        listDiv.appendChild(hw);
+        listDiv.appendChild(badge);
       });
 
       cell.appendChild(listDiv);
     }
 
-    // 今日
-    if(dateStr === todayStr){
-      cell.classList.add('cal-today');
-    }
+    if(dateStr === todayStr) cell.classList.add('cal-today');
 
-    // ✅ 日付セルタップ：一覧の該当日付へスクロール（一覧は消さない）
     cell.addEventListener('click', () => {
-      // 一覧のみモードでも見えるように、必要ならタブをcalendarに戻す
-      scrollToAssignmentDate(dateStr);
+      // Calendarタブのまま、一覧の該当日付へ移動
+      // （一覧のみモードでも移動自体はOK）
+      scrollToDateSection(dateStr);
     });
 
     grid.appendChild(cell);
@@ -622,95 +542,134 @@ function renderCalendar(){
 }
 
 /* ==========================================================
-   8) 一覧描画（常に全件、日付見出しつき）
-   - ここで “一覧が消える/その日だけ” を完全に排除
+   一覧描画（全件・日付セクションを作る）
+   - 各日付に id="date-YYYY-MM-DD" を付ける
+   - 提出済みは10日超で非表示
+   - 未提出だけ「宿題を開く」ボタン
    ========================================================== */
 function renderAssignmentListAll(){
   const list = document.getElementById('assignmentList');
-  if(!list) return;
   list.innerHTML = '';
 
-  const today = new Date();
-  today.setHours(0,0,0,0); // 日付比較を安定させる
-
-  // allAssignments が配列じゃない事故を防ぐ
   const items = Array.isArray(allAssignments) ? allAssignments : [];
-
-  // 何もなければメッセージ
   if(items.length === 0){
     list.innerHTML = '<div class="meta">宿題がありません。</div>';
     return;
   }
 
-  // 宿題を1件ずつ描画
-  items.forEach(a => {
+  // 日付順に並べる（dueが空は最後）
+  const sorted = items.slice().sort((a,b)=>{
+    const da = String(a.due||'9999-12-31');
+    const db = String(b.due||'9999-12-31');
+    return da.localeCompare(db);
+  });
 
-    // ---- 1) 提出済み判定 ----
-    const status = String(a.status || '').trim();
-    const isSubmitted = (status === '提出' || status === '提出済');
+  // 日付ごとにまとめる
+  const byDate = {};
+  sorted.forEach(a=>{
+    const d = String(a.due||'未設定').trim() || '未設定';
+    if(!byDate[d]) byDate[d] = [];
+    byDate[d].push(a);
+  });
 
-    // ---- 2) due（日付）を Date に変換 ----
-    const dueStr = String(a.due || '').trim(); // "2025-12-22" みたいな形式想定
-    const dueDate = new Date(dueStr);
-    const dueValid = !isNaN(dueDate.getTime()); // 日付として正しいか
+  const today = new Date();
+  today.setHours(0,0,0,0);
 
-    // ---- 3) 期限から何日経過したか（提出済み表示10日ルール）----
-    let diffDays = 9999;
-    if(dueValid){
-      dueDate.setHours(0,0,0,0);
-      diffDays = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+  Object.keys(byDate).forEach(dateStr=>{
+    const section = document.createElement('div');
+    section.className = 'date-section';
+    if(dateStr !== '未設定'){
+      section.id = 'date-' + dateStr; // ✅ ここがスクロール先
     }
 
-    // ✅ 提出済み かつ 10日より前（11日以上前）なら表示しない
-    // diffDaysが負（未来）なら 0扱いではなく、そのまま表示でOK（未来の提出済みは基本ないけど）
-    if(isSubmitted && diffDays > 10){
-      return; // ← これが「10日より前は出さない」
-    }
-
-    // ---- 4) ここから表示（カード） ----
-    const div = document.createElement('div');
-    div.className = 'item';
-
-    // タイトル
     const title = document.createElement('div');
-    title.className = 'item-title';
-    title.textContent = a.title || '(タイトル未設定)';
-    div.appendChild(title);
+    title.className = 'date-title';
+    title.textContent = (dateStr === '未設定') ? '期限未設定' : dateStr;
+    section.appendChild(title);
 
-    // メタ（期限など）
-    const meta = document.createElement('div');
-    meta.className = 'meta';
-    if(dueStr){
-      meta.textContent = '期限: ' + dueStr + (isSubmitted ? '（提出済）' : '（未提出）');
-    }else{
-      meta.textContent = isSubmitted ? '提出済' : '未提出';
-    }
-    div.appendChild(meta);
+    const rows = byDate[dateStr];
 
-    // ✅ 未提出だけ「宿題を開く」ボタンを表示
-    if(!isSubmitted){
-      const btn = document.createElement('button');
-      btn.className = 'btn-primary';
-      btn.type = 'button';
-      btn.textContent = '宿題を開く';
-      btn.onclick = () => {
-        if(!a.openUrl){
-          alert('URLが設定されていません');
-          return;
+    rows.forEach(a=>{
+      const submitted = isSubmitted_(a);
+
+      // 提出済みは10日超で非表示
+      if(submitted && dateStr !== '未設定'){
+        const dueDate = new Date(dateStr);
+        if(!isNaN(dueDate.getTime())){
+          dueDate.setHours(0,0,0,0);
+          const diffDays = Math.floor((today - dueDate)/86400000);
+          if(diffDays > 10) return;
         }
-        window.open(a.openUrl, '_blank');
-      };
-      div.appendChild(btn);
-    }
+      }
 
-    list.appendChild(div);
+      const div = document.createElement('div');
+      div.className = 'item';
+
+      const t = document.createElement('div');
+      t.className = 'item-title';
+      t.textContent = a.title || '(タイトル未設定)';
+      div.appendChild(t);
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+
+      const badge = document.createElement('span');
+      if(submitted){
+        badge.className = 'badge badge-sub';
+        badge.textContent = '提出済';
+      }else{
+        badge.className = 'badge badge-not';
+        badge.textContent = '未提出';
+      }
+      meta.appendChild(badge);
+
+      if(a.overdue && !submitted){
+        const bo = document.createElement('span');
+        bo.className = 'badge badge-over';
+        bo.textContent = '期限切れ';
+        meta.appendChild(bo);
+      }
+
+      if(dateStr !== '未設定'){
+        const due = document.createElement('span');
+        due.textContent = ' 期限: ' + dateStr;
+        meta.appendChild(due);
+      }
+
+      const p = document.createElement('span');
+      p.textContent = ' ／ ポイント: ' + (a.points || 0);
+      meta.appendChild(p);
+
+      div.appendChild(meta);
+
+      if(!submitted){
+        const btn = document.createElement('button');
+        btn.className = 'btn-primary';
+        btn.type = 'button';
+        btn.textContent = '宿題を開く';
+        btn.onclick = () => {
+          if(!a.openUrl){ alert('URLが設定されていません'); return; }
+          window.open(a.openUrl, '_blank');
+        };
+        div.appendChild(btn);
+      }
+
+      if(a.lineNote){
+        const ln = document.createElement('div');
+        ln.className = 'meta';
+        ln.textContent = a.lineNote;
+        div.appendChild(ln);
+      }
+
+      section.appendChild(div);
+    });
+
+    list.appendChild(section);
   });
 }
 
 /* ==========================================================
-   9) タブ切替
-   - Calendar: カレンダー＋一覧
-   - ListOnly: 一覧のみ（カレンダー非表示）
+   タブ
    ========================================================== */
 function setTabActive(mode){
   const tabCal  = document.getElementById('tabCalendar');
@@ -730,80 +689,24 @@ function setTabActive(mode){
 }
 
 document.getElementById('tabCalendar').addEventListener('click', ()=> setTabActive('calendar'));
-document.getElementById('tabList').addEventListener('click', ()=> setTabActive('list'));
+document.getElementById('tabList').addEventListener('click', ()=> setTabActive('listOnly'));
 
 /* ==========================================================
-   10) パスワード表示切替（確実に動く）
+   パスワード表示
    ========================================================== */
 document.getElementById('showPwd').addEventListener('change', (e)=>{
-  const pwd = document.getElementById('pwd');
-  pwd.type = e.target.checked ? 'text' : 'password';
+  document.getElementById('pwd').type = e.target.checked ? 'text' : 'password';
 });
 
 function refreshAssignments(){
   if(!currentStudent) return;
   loadAssignments();
 }
-function renderAssignmentListSafe() {
-  const list = document.getElementById('assignmentList');
-  if (!list) return;
-
-  list.innerHTML = '';
-
-  if (!Array.isArray(allAssignments)) {
-    list.innerHTML = '<div class="meta">宿題データがありません。</div>';
-    return;
-  }
-
-  const today = new Date();
-
-  allAssignments.forEach(a => {
-    const status = String(a.status || '').trim();
-
-    // 提出済み：10日超は表示しない
-    if (status === '提出' || status === '提出済') {
-      if (!a.due) return;
-      const d = new Date(a.due);
-      if ((today - d) / 86400000 > 10) return;
-    }
-
-    const div = document.createElement('div');
-    div.className = 'item';
-
-    const title = document.createElement('div');
-    title.className = 'item-title';
-    title.textContent = a.title || '(タイトル未設定)';
-    div.appendChild(title);
-
-    // 未提出のみ「宿題を開く」ボタン表示
-    if (status === '' || status === '未提出') {
-      const btn = document.createElement('button');
-      btn.className = 'btn-primary';
-      btn.textContent = '宿題を開く';
-      btn.type = 'button';
-      btn.onclick = () => {
-        if (a.openUrl) {
-          window.open(a.openUrl, '_blank');
-        }
-      };
-      div.appendChild(btn);
-    } else {
-      // 提出済み表示（ボタンなし）
-      const done = document.createElement('div');
-      done.className = 'meta';
-      done.textContent = '提出済み';
-      div.appendChild(done);
-    }
-
-    list.appendChild(div);
-  });
-}
 
 /* ==========================================================
-   11) 起動時：セッション復帰（保存済みならログイン画面を飛ばす）
+   起動
    ========================================================== */
 (function boot(){
-  // デフォは Calendar表示
   setTabActive('calendar');
 
   const saved = loadSession();
@@ -824,9 +727,12 @@ function renderAssignmentListSafe() {
   initCalendarState();
   loadAssignments();
 })();
+
+/* ==========================================================
+   Service Worker（PWA）
+   ========================================================== */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./service-worker.js');
-
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     console.log('Service Worker updated. Reloading...');
     window.location.reload();
@@ -836,8 +742,3 @@ if ('serviceWorker' in navigator) {
 
 </body>
 </html>
-
-
-
-
-
