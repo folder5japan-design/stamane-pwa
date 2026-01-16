@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stamane-cache-v3'; // ← 更新時に必ず番号を変える
+const CACHE_NAME = 'stamane-cache-v4'; // ← 更新時に必ず番号を変える
 const ASSETS = [
   './',
   './index.html',
